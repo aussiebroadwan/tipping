@@ -12,8 +12,11 @@ import (
 )
 
 const createFixture = `-- name: CreateFixture :one
-INSERT INTO fixtures (competition_id, roundTitle, matchState, venue, venueCity, matchCentreUrl, kickOffTime) 
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO fixtures (
+  competition_id, roundTitle, matchState, venue, venueCity, matchCentreUrl, kickOffTime
+) VALUES (
+  $1, $2, $3, $4, $5, $6, $7
+)
 RETURNING id, competition_id, roundtitle, matchstate, venue, venuecity, matchcentreurl, kickofftime
 `
 
@@ -27,6 +30,10 @@ type CreateFixtureParams struct {
 	Kickofftime    pgtype.Timestamp
 }
 
+// Insert a new fixture into the fixtures table.
+// This query adds a new fixture record with the specified details, such as
+// competition ID, round title, match state, venue, venue city, match center URL,
+// and kickoff time.
 func (q *Queries) CreateFixture(ctx context.Context, arg CreateFixtureParams) (*Fixture, error) {
 	row := q.db.QueryRow(ctx, createFixture,
 		arg.CompetitionID,
@@ -51,19 +58,12 @@ func (q *Queries) CreateFixture(ctx context.Context, arg CreateFixtureParams) (*
 	return &i, err
 }
 
-const deleteFixture = `-- name: DeleteFixture :exec
-DELETE FROM fixtures WHERE id = $1
-`
-
-func (q *Queries) DeleteFixture(ctx context.Context, id int32) error {
-	_, err := q.db.Exec(ctx, deleteFixture, id)
-	return err
-}
-
 const getFixtureByID = `-- name: GetFixtureByID :one
 SELECT id, competition_id, roundtitle, matchstate, venue, venuecity, matchcentreurl, kickofftime FROM fixtures WHERE id = $1
 `
 
+// Retrieve a specific fixture by its unique identifier.
+// Useful for fetching details about a single fixture based on its ID.
 func (q *Queries) GetFixtureByID(ctx context.Context, id int32) (*Fixture, error) {
 	row := q.db.QueryRow(ctx, getFixtureByID, id)
 	var i Fixture
@@ -86,6 +86,9 @@ WHERE competition_id = $1
 ORDER BY kickOffTime
 `
 
+// Retrieve fixtures for a specific competition, ordered by kickoff time.
+// This query fetches all fixtures for a given competition ID, ordered by their
+// kickoff time to display them in chronological order.
 func (q *Queries) GetFixturesByCompetitionID(ctx context.Context, competitionID int32) ([]*Fixture, error) {
 	rows, err := q.db.Query(ctx, getFixturesByCompetitionID, competitionID)
 	if err != nil {
@@ -119,6 +122,8 @@ const listFixtures = `-- name: ListFixtures :many
 SELECT id, competition_id, roundtitle, matchstate, venue, venuecity, matchcentreurl, kickofftime FROM fixtures
 `
 
+// Retrieve all fixtures available in the system.
+// This query is used to list all fixtures without filtering by any criteria.
 func (q *Queries) ListFixtures(ctx context.Context) ([]*Fixture, error) {
 	rows, err := q.db.Query(ctx, listFixtures)
 	if err != nil {
@@ -151,12 +156,12 @@ func (q *Queries) ListFixtures(ctx context.Context) ([]*Fixture, error) {
 const updateFixture = `-- name: UpdateFixture :one
 UPDATE fixtures 
 SET 
-    competition_id = COALESCE($2, competition_id), 
-    roundTitle = COALESCE($3, roundTitle), 
-    matchState = COALESCE($4, matchState), 
-    venue = COALESCE($5, venue), 
-    venueCity = COALESCE($6, venueCity), 
-    matchCentreUrl = COALESCE($7, matchCentreUrl), 
+    competition_id = COALESCE($2, competition_id),
+    roundTitle = COALESCE($3, roundTitle),
+    matchState = COALESCE($4, matchState),
+    venue = COALESCE($5, venue),
+    venueCity = COALESCE($6, venueCity),
+    matchCentreUrl = COALESCE($7, matchCentreUrl),
     kickOffTime = COALESCE($8, kickOffTime)
 WHERE id = $1
 RETURNING id, competition_id, roundtitle, matchstate, venue, venuecity, matchcentreurl, kickofftime
@@ -174,6 +179,9 @@ type UpdateFixtureParams struct {
 }
 
 // Conditionally update fixture details based on provided arguments.
+// This query updates the fields of a fixture record where the provided arguments
+// are not NULL. It uses the COALESCE function to retain the existing value if
+// the argument is NULL.
 func (q *Queries) UpdateFixture(ctx context.Context, arg UpdateFixtureParams) (*Fixture, error) {
 	row := q.db.QueryRow(ctx, updateFixture,
 		arg.ID,
