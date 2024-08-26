@@ -36,12 +36,12 @@ RETURNING *;
 -- the argument is NULL.
 UPDATE fixtures 
 SET 
-    competition_id = COALESCE($2, competition_id),
-    roundTitle = COALESCE($3, roundTitle),
-    matchState = COALESCE($4, matchState),
-    venue = COALESCE($5, venue),
-    venueCity = COALESCE($6, venueCity),
-    matchCentreUrl = COALESCE($7, matchCentreUrl),
-    kickOffTime = COALESCE($8, kickOffTime)
+    competition_id = COALESCE(sqlc.narg('competitionId'), competition_id),
+    roundTitle = COALESCE(sqlc.narg('roundTitle'), roundTitle),
+    matchState = COALESCE(sqlc.narg('matchState'), matchState),
+    venue = COALESCE(sqlc.narg('venue'), venue),
+    venueCity = COALESCE(sqlc.narg('venueCity'), venueCity),
+    matchCentreUrl = COALESCE(sqlc.narg('matchCentreUrl'), matchCentreUrl),
+    kickOffTime = COALESCE(sqlc.narg('kickOffTime'), kickOffTime)
 WHERE id = $1
 RETURNING *;

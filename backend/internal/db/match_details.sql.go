@@ -27,8 +27,8 @@ type CreateMatchDetailParams struct {
 	AwayteamOdds  *float64
 	HometeamScore *int32
 	AwayteamScore *int32
-	HometeamForm  *string
-	AwayteamForm  *string
+	HometeamForm  string
+	AwayteamForm  string
 	WinnerTeamid  *int32
 }
 
@@ -182,15 +182,15 @@ RETURNING fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, ho
 
 type UpdateMatchDetailParams struct {
 	FixtureID     int32
-	HometeamID    int32
-	AwayteamID    int32
-	HometeamOdds  *float64
-	AwayteamOdds  *float64
-	HometeamScore *int32
-	AwayteamScore *int32
-	HometeamForm  *string
-	AwayteamForm  *string
-	WinnerTeamid  *int32
+	HomeTeamID    *int32
+	AwayTeamID    *int32
+	HomeTeamOdds  *float64
+	AwayTeamOdds  *float64
+	HomeTeamScore *int32
+	AwayTeamScore *int32
+	HomeTeamForm  *string
+	AwayTeamForm  *string
+	WinnerTeamId  *int32
 }
 
 // Conditionally update match detail fields based on provided arguments.
@@ -198,15 +198,15 @@ type UpdateMatchDetailParams struct {
 func (q *Queries) UpdateMatchDetail(ctx context.Context, arg UpdateMatchDetailParams) (*MatchDetail, error) {
 	row := q.db.QueryRow(ctx, updateMatchDetail,
 		arg.FixtureID,
-		arg.HometeamID,
-		arg.AwayteamID,
-		arg.HometeamOdds,
-		arg.AwayteamOdds,
-		arg.HometeamScore,
-		arg.AwayteamScore,
-		arg.HometeamForm,
-		arg.AwayteamForm,
-		arg.WinnerTeamid,
+		arg.HomeTeamID,
+		arg.AwayTeamID,
+		arg.HomeTeamOdds,
+		arg.AwayTeamOdds,
+		arg.HomeTeamScore,
+		arg.AwayTeamScore,
+		arg.HomeTeamForm,
+		arg.AwayTeamForm,
+		arg.WinnerTeamId,
 	)
 	var i MatchDetail
 	err := row.Scan(

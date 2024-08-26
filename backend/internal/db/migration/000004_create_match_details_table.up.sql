@@ -6,8 +6,8 @@ CREATE TABLE match_details (
   awayTeam_odds FLOAT,
   homeTeam_score INTEGER,
   awayTeam_score INTEGER,
-  homeTeam_form VARCHAR(5),
-  awayTeam_form VARCHAR(5),
+  homeTeam_form VARCHAR(5) NOT NULL,
+  awayTeam_form VARCHAR(5) NOT NULL,
   winner_teamId INTEGER REFERENCES teams(team_id)
 );
 

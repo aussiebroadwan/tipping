@@ -1,11 +1,11 @@
 CREATE TABLE fixtures (
   id SERIAL PRIMARY KEY,
   competition_id INTEGER NOT NULL REFERENCES competitions(id) ON DELETE CASCADE,
-  roundTitle VARCHAR(255),
-  matchState VARCHAR(50),
-  venue VARCHAR(255),
-  venueCity VARCHAR(255),
-  matchCentreUrl VARCHAR(255),
+  roundTitle VARCHAR(255) NOT NULL,
+  matchState VARCHAR(50) NOT NULL,
+  venue VARCHAR(255) NOT NULL,
+  venueCity VARCHAR(255) NOT NULL,
+  matchCentreUrl VARCHAR(255) NOT NULL,
   kickOffTime TIMESTAMP WITHOUT TIME ZONE
 );
 

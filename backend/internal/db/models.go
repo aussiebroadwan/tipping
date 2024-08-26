@@ -21,15 +21,15 @@ type Fixture struct {
 	// Foreign key referencing competitions table
 	CompetitionID int32
 	// Title of the round (e.g., Round 1)
-	Roundtitle *string
+	Roundtitle string
 	// Current state of the match (e.g., Upcoming, Completed)
-	Matchstate *string
+	Matchstate string
 	// Venue name where the match will take place
-	Venue *string
+	Venue string
 	// City where the venue is located
-	Venuecity *string
+	Venuecity string
 	// URL to the match center page
-	Matchcentreurl *string
+	Matchcentreurl string
 	// Scheduled kickoff time of the match
 	Kickofftime pgtype.Timestamp
 }
@@ -50,9 +50,9 @@ type MatchDetail struct {
 	// Score of the away team
 	AwayteamScore *int32
 	// Recent form of the home team (e.g., WLWWL)
-	HometeamForm *string
+	HometeamForm string
 	// Recent form of the away team (e.g., LWWLL)
-	AwayteamForm *string
+	AwayteamForm string
 	// Foreign key referencing the winning team
 	WinnerTeamid *int32
 }

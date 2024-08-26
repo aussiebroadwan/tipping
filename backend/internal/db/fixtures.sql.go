@@ -22,11 +22,11 @@ RETURNING id, competition_id, roundtitle, matchstate, venue, venuecity, matchcen
 
 type CreateFixtureParams struct {
 	CompetitionID  int32
-	Roundtitle     *string
-	Matchstate     *string
-	Venue          *string
-	Venuecity      *string
-	Matchcentreurl *string
+	Roundtitle     string
+	Matchstate     string
+	Venue          string
+	Venuecity      string
+	Matchcentreurl string
 	Kickofftime    pgtype.Timestamp
 }
 
@@ -169,13 +169,13 @@ RETURNING id, competition_id, roundtitle, matchstate, venue, venuecity, matchcen
 
 type UpdateFixtureParams struct {
 	ID             int32
-	CompetitionID  int32
-	Roundtitle     *string
-	Matchstate     *string
+	CompetitionId  *int32
+	RoundTitle     *string
+	MatchState     *string
 	Venue          *string
-	Venuecity      *string
-	Matchcentreurl *string
-	Kickofftime    pgtype.Timestamp
+	VenueCity      *string
+	MatchCentreUrl *string
+	KickOffTime    pgtype.Timestamp
 }
 
 // Conditionally update fixture details based on provided arguments.
@@ -185,13 +185,13 @@ type UpdateFixtureParams struct {
 func (q *Queries) UpdateFixture(ctx context.Context, arg UpdateFixtureParams) (*Fixture, error) {
 	row := q.db.QueryRow(ctx, updateFixture,
 		arg.ID,
-		arg.CompetitionID,
-		arg.Roundtitle,
-		arg.Matchstate,
+		arg.CompetitionId,
+		arg.RoundTitle,
+		arg.MatchState,
 		arg.Venue,
-		arg.Venuecity,
-		arg.Matchcentreurl,
-		arg.Kickofftime,
+		arg.VenueCity,
+		arg.MatchCentreUrl,
+		arg.KickOffTime,
 	)
 	var i Fixture
 	err := row.Scan(
