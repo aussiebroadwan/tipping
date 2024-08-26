@@ -27,7 +27,7 @@ func NewNRLService(baseURL string) *NRLService {
 
 // FetchFixtures fetches all fixtures for a given competition ID and enriches each fixture
 // with additional details such as odds and recent form from their respective matchCentreURLs.
-func (s *NRLService) FetchFixtures(competitionID, roundNum, season int) ([]models.NRLFixture, error) {
+func (s *NRLService) FetchFixtures(competitionID int64, roundNum, season int) ([]models.NRLFixture, error) {
 	url := fmt.Sprintf("%s/draw/data?competition=%d", s.baseURL, competitionID)
 
 	if competitionID == 0 {

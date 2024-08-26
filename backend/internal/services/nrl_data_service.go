@@ -87,7 +87,14 @@ func (s *NRLDataService) createOrUpdateFixture(fixtureID int64, compID int, fixt
 
 // storeTeam stores a team in the database, creating it if it does not exist.
 func (s *NRLDataService) storeTeam(team models.NRLTeam) error {
-	_, err := s.queries.CreateTeam(s.ctx, db.CreateTeamParams{
+	// Check if team exists
+	_, err := s.queries.GetTeamByID(s.ctx, int64(team.ID))
+	if err == nil {
+		return nil
+	}
+
+	// Create team
+	_, err = s.queries.CreateTeam(s.ctx, db.CreateTeamParams{
 		TeamID:   int64(team.ID),
 		Nickname: team.Name,
 	})

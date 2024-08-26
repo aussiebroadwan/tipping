@@ -12,7 +12,6 @@ import (
 const createTeam = `-- name: CreateTeam :one
 INSERT INTO teams (team_id, nickName) 
 VALUES ($1, $2)
-ON CONFLICT (team_id) DO NOTHING
 RETURNING team_id, nickname
 `
 

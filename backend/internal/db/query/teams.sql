@@ -11,6 +11,5 @@ SELECT * FROM teams WHERE team_id = $1;
 -- If a team with the same team_id already exists, do nothing.
 INSERT INTO teams (team_id, nickName) 
 VALUES ($1, $2)
-ON CONFLICT (team_id) DO NOTHING
 RETURNING *;
 
