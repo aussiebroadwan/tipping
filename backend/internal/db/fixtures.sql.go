@@ -3,7 +3,7 @@
 //   sqlc v1.26.0
 // source: fixtures.sql
 
-package sqlc
+package db
 
 import (
 	"context"

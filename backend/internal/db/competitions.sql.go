@@ -3,7 +3,7 @@
 //   sqlc v1.26.0
 // source: competitions.sql
 
-package sqlc
+package db
 
 import (
 	"context"
