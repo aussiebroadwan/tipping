@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - tillered-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: nrl_tipping
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+  
+  backend:
+    image: nrl-tipping-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: password 
+      DB_NAME: nrl_tipping
+      NRL_API_BASE_URL: https://www.nrl.com
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    image: nrl-tipping-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      VUE_APP_API_BASE_URL: http://backend:8000
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
+    driver: local
