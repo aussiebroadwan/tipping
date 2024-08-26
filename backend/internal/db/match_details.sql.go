@@ -167,29 +167,21 @@ func (q *Queries) ListMatchDetailsByCompetitionID(ctx context.Context, competiti
 const updateMatchDetail = `-- name: UpdateMatchDetail :one
 UPDATE match_details 
 SET 
-    homeTeam_id = COALESCE($2, homeTeam_id), 
-    awayTeam_id = COALESCE($3, awayTeam_id), 
-    homeTeam_odds = COALESCE($4, homeTeam_odds), 
-    awayTeam_odds = COALESCE($5, awayTeam_odds), 
-    homeTeam_score = COALESCE($6, homeTeam_score), 
-    awayTeam_score = COALESCE($7, awayTeam_score), 
-    homeTeam_form = COALESCE($8, homeTeam_form), 
-    awayTeam_form = COALESCE($9, awayTeam_form), 
-    winner_teamId = COALESCE($10, winner_teamId)
+    homeTeam_odds = COALESCE($2, homeTeam_odds), 
+    awayTeam_odds = COALESCE($3, awayTeam_odds), 
+    homeTeam_score = COALESCE($4, homeTeam_score), 
+    awayTeam_score = COALESCE($5, awayTeam_score), 
+    winner_teamId = COALESCE($6, winner_teamId)
 WHERE fixture_id = $1
 RETURNING fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, hometeam_score, awayteam_score, hometeam_form, awayteam_form, winner_teamid
 `
 
 type UpdateMatchDetailParams struct {
 	FixtureID     int64
-	HomeTeamID    *int64
-	AwayTeamID    *int64
 	HomeTeamOdds  *float64
 	AwayTeamOdds  *float64
 	HomeTeamScore *int32
 	AwayTeamScore *int32
-	HomeTeamForm  *string
-	AwayTeamForm  *string
 	WinnerTeamId  *int64
 }
 
@@ -198,14 +190,10 @@ type UpdateMatchDetailParams struct {
 func (q *Queries) UpdateMatchDetail(ctx context.Context, arg UpdateMatchDetailParams) (*MatchDetail, error) {
 	row := q.db.QueryRow(ctx, updateMatchDetail,
 		arg.FixtureID,
-		arg.HomeTeamID,
-		arg.AwayTeamID,
 		arg.HomeTeamOdds,
 		arg.AwayTeamOdds,
 		arg.HomeTeamScore,
 		arg.AwayTeamScore,
-		arg.HomeTeamForm,
-		arg.AwayTeamForm,
 		arg.WinnerTeamId,
 	)
 	var i MatchDetail

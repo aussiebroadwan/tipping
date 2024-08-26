@@ -22,6 +22,7 @@ func TestCreateFixture(t *testing.T) {
 	ctx := context.Background()
 
 	arg := db.CreateFixtureParams{
+		ID:             1,
 		CompetitionID:  111,
 		Roundtitle:     "Round 1",
 		Matchstate:     "Upcoming",
@@ -75,10 +76,10 @@ func TestUpdateFixture(t *testing.T) {
 
 	// Assume a fixture with ID 1 exists
 	fixtureID := int64(1)
-	value := "Round 2"
+	value := "FullTime"
 	arg := db.UpdateFixtureParams{
 		ID:         fixtureID,
-		RoundTitle: &value,
+		MatchState: &value,
 	}
 
 	fixture, err := testQueries.UpdateFixture(ctx, arg)
@@ -86,7 +87,7 @@ func TestUpdateFixture(t *testing.T) {
 		t.Fatalf("Failed to update fixture: %v", err)
 	}
 
-	if fixture.Roundtitle != "Round 2" {
+	if fixture.Roundtitle != "Round 1" {
 		t.Fatalf("Expected updated round title 'Round 2', got '%s'", fixture.Roundtitle)
 	}
 }
