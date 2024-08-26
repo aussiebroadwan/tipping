@@ -9,13 +9,20 @@ import (
 )
 
 type Querier interface {
+	CreateFixture(ctx context.Context, arg CreateFixtureParams) (*Fixture, error)
+	DeleteFixture(ctx context.Context, id int32) error
 	// Retrieve a specific competition by its unique identifier.
 	GetCompetitionByID(ctx context.Context, id int32) (*Competition, error)
+	GetFixtureByID(ctx context.Context, id int32) (*Fixture, error)
+	GetFixturesByCompetitionID(ctx context.Context, competitionID int32) ([]*Fixture, error)
 	// The competitions table is a static table that stores information about the
 	// competitions that are available in the system. Other tables in the system
 	// reference this table to establish a relationship.
 	// Retrieve all competitions available in the system.
 	ListCompetitions(ctx context.Context) ([]*Competition, error)
+	ListFixtures(ctx context.Context) ([]*Fixture, error)
+	// Conditionally update fixture details based on provided arguments.
+	UpdateFixture(ctx context.Context, arg UpdateFixtureParams) (*Fixture, error)
 }
 
 var _ Querier = (*Queries)(nil)
