@@ -61,5 +61,6 @@ type Team struct {
 	// Unique identifier for each team
 	TeamID int64
 	// Nickname or short name for the team (e.g., Cowboys)
-	Nickname string
+	Nickname      string
+	CompetitionID int64
 }

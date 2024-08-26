@@ -77,7 +77,7 @@ func main() {
 
 	conn, err := connect(ctx)
 	if err != nil {
-		lg.Error("Failed to connect to database: %v", err)
+		lg.Error(fmt.Sprintf("Failed to connect to database: %s", err.Error()))
 		os.Exit(1)
 	}
 	defer conn.Close(ctx)
