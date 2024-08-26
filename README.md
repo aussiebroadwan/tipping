@@ -19,7 +19,7 @@ docker compose build
 
 # Setup the database and migrate to the current version
 docker compose up -d db
-migrate -source 'file:./backend/db/migration' -database 'postgres://postgres:password@localhost:5432/nrl_tipping?sslmode=disable' up
+migrate -source 'file:./backend/internal/db/migration' -database 'postgres://postgres:password@localhost:5432/nrl_tipping?sslmode=disable' up
 
 # Run the whole project
 docker compose up
@@ -32,16 +32,16 @@ If you want to add a new table or modify existing tables, you will need to creat
 
 ```bash
 # Generate new migration files
-migrate create -ext sql -dir backend/db/migration -seq add_team_city
+migrate create -ext sql -dir backend/internal/db/migration -seq add_team_city
 ```
 Then, modify the generated migration files:
 
 ```sql
--- file: backend/db/migration/000003_add_team_city.up.sql
+-- file: backend/db/internal/migration/000003_add_team_city.up.sql
 ALTER TABLE teams
 ADD COLUMN city VARCHAR(255);
 
--- file: backend/db/migration/000003_add_team_city.down.sql
+-- file: backend/db/internal/migration/000003_add_team_city.down.sql
 ALTER TABLE teams
 DROP COLUMN city;
 ```
@@ -49,17 +49,17 @@ DROP COLUMN city;
 After modifying the migration files, run the following command to apply the migration:
 
 ```bash
-migrate -source 'file:./backend/db/migration' -database 'postgres://postgres:password@localhost:5432/nrl_tipping?sslmode=disable' up
+migrate -source 'file:./backend/internal/db/migration' -database 'postgres://postgres:password@localhost:5432/nrl_tipping?sslmode=disable' up
 ```
 
 ### Adding a New SQL Query
 
 This project uses [sqlc] to generate type-safe Go code from SQL queries, avoiding the use of traditional ORMs and maintaining better control over database interactions. To add a new query, follow these steps:
 
-1. **Create a New SQL Query**: Add a new SQL query to one of the `.sql` files located in `backend/db/query`. For example, to get a fixture by its ID:
+1. **Create a New SQL Query**: Add a new SQL query to one of the `.sql` files located in `backend/internal/db/query`. For example, to get a fixture by its ID:
 
 ```sql
--- file: backend/db/query/fixtures.sql
+-- file: backend/internal/db/query/fixtures.sql
 
 -- name: GetFixtureByID :one
 SELECT *
@@ -74,7 +74,7 @@ cd backend
 sqlc generate
 ```
 
-This command will generate new Go functions based on your SQL queries in the `backend/db` directory. Make sure to run `sqlc generate` every time you modify the `.sql` files.
+This command will generate new Go functions based on your SQL queries in the `backend/internal/db` directory. Make sure to run `sqlc generate` every time you modify the `.sql` files.
 
 ## Contributing
 
