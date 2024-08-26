@@ -20,16 +20,16 @@ RETURNING fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, ho
 `
 
 type CreateMatchDetailParams struct {
-	FixtureID     int32
-	HometeamID    int32
-	AwayteamID    int32
+	FixtureID     int64
+	HometeamID    int64
+	AwayteamID    int64
 	HometeamOdds  *float64
 	AwayteamOdds  *float64
 	HometeamScore *int32
 	AwayteamScore *int32
 	HometeamForm  string
 	AwayteamForm  string
-	WinnerTeamid  *int32
+	WinnerTeamid  *int64
 }
 
 // Insert a new match detail record into the match_details table.
@@ -68,7 +68,7 @@ SELECT fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, homet
 `
 
 // Retrieve match details for a specific fixture by its unique fixture ID.
-func (q *Queries) GetMatchDetailsByFixtureID(ctx context.Context, fixtureID int32) (*MatchDetail, error) {
+func (q *Queries) GetMatchDetailsByFixtureID(ctx context.Context, fixtureID int64) (*MatchDetail, error) {
 	row := q.db.QueryRow(ctx, getMatchDetailsByFixtureID, fixtureID)
 	var i MatchDetail
 	err := row.Scan(
@@ -133,7 +133,7 @@ ORDER BY f.kickOffTime
 // Retrieve all match details for a specific competition ID.
 // This query performs a JOIN between match_details and fixtures to get all
 // match details that are part of a specific competition.
-func (q *Queries) ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int32) ([]*MatchDetail, error) {
+func (q *Queries) ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int64) ([]*MatchDetail, error) {
 	rows, err := q.db.Query(ctx, listMatchDetailsByCompetitionID, competitionID)
 	if err != nil {
 		return nil, err
@@ -181,16 +181,16 @@ RETURNING fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, ho
 `
 
 type UpdateMatchDetailParams struct {
-	FixtureID     int32
-	HomeTeamID    *int32
-	AwayTeamID    *int32
+	FixtureID     int64
+	HomeTeamID    *int64
+	AwayTeamID    *int64
 	HomeTeamOdds  *float64
 	AwayTeamOdds  *float64
 	HomeTeamScore *int32
 	AwayTeamScore *int32
 	HomeTeamForm  *string
 	AwayTeamForm  *string
-	WinnerTeamId  *int32
+	WinnerTeamId  *int64
 }
 
 // Conditionally update match detail fields based on provided arguments.

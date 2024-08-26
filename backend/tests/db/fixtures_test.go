@@ -45,7 +45,7 @@ func TestGetFixtureByID(t *testing.T) {
 	ctx := context.Background()
 
 	// Assuming a fixture with ID 1 exists
-	fixtureID := int32(1)
+	fixtureID := int64(1)
 	fixture, err := testQueries.GetFixtureByID(ctx, fixtureID)
 	if err != nil {
 		t.Fatalf("Failed to get fixture by ID: %v", err)
@@ -59,7 +59,7 @@ func TestGetFixtureByID(t *testing.T) {
 func TestGetFixturesByCompetitionID(t *testing.T) {
 	ctx := context.Background()
 
-	competitionID := int32(111) // NRL
+	competitionID := int64(111) // NRL
 	fixtures, err := testQueries.GetFixturesByCompetitionID(ctx, competitionID)
 	if err != nil {
 		t.Fatalf("Failed to get fixtures by competition ID: %v", err)
@@ -74,7 +74,7 @@ func TestUpdateFixture(t *testing.T) {
 	ctx := context.Background()
 
 	// Assume a fixture with ID 1 exists
-	fixtureID := int32(1)
+	fixtureID := int64(1)
 	value := "Round 2"
 	arg := db.UpdateFixtureParams{
 		ID:         fixtureID,

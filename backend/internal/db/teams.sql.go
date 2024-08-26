@@ -17,7 +17,7 @@ RETURNING team_id, nickname
 `
 
 type CreateTeamParams struct {
-	TeamID   int32
+	TeamID   int64
 	Nickname string
 }
 
@@ -35,7 +35,7 @@ SELECT team_id, nickname FROM teams WHERE team_id = $1
 `
 
 // Retrieve a specific team by its unique identifier.
-func (q *Queries) GetTeamByID(ctx context.Context, teamID int32) (*Team, error) {
+func (q *Queries) GetTeamByID(ctx context.Context, teamID int64) (*Team, error) {
 	row := q.db.QueryRow(ctx, getTeamByID, teamID)
 	var i Team
 	err := row.Scan(&i.TeamID, &i.Nickname)

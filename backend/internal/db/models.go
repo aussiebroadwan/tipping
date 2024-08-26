@@ -10,16 +10,16 @@ import (
 
 type Competition struct {
 	// Unique identifier for each competition
-	ID int32
+	ID int64
 	// Name of the competition (e.g., NRL, NRLW)
 	Name string
 }
 
 type Fixture struct {
 	// Unique identifier for each fixture
-	ID int32
+	ID int64
 	// Foreign key referencing competitions table
-	CompetitionID int32
+	CompetitionID int64
 	// Title of the round (e.g., Round 1)
 	Roundtitle string
 	// Current state of the match (e.g., Upcoming, Completed)
@@ -36,11 +36,11 @@ type Fixture struct {
 
 type MatchDetail struct {
 	// Foreign key referencing fixtures table
-	FixtureID int32
+	FixtureID int64
 	// Foreign key for home team referencing teams table
-	HometeamID int32
+	HometeamID int64
 	// Foreign key for away team referencing teams table
-	AwayteamID int32
+	AwayteamID int64
 	// Odds for the home team winning
 	HometeamOdds *float64
 	// Odds for the away team winning
@@ -54,12 +54,12 @@ type MatchDetail struct {
 	// Recent form of the away team (e.g., LWWLL)
 	AwayteamForm string
 	// Foreign key referencing the winning team
-	WinnerTeamid *int32
+	WinnerTeamid *int64
 }
 
 type Team struct {
 	// Unique identifier for each team
-	TeamID int32
+	TeamID int64
 	// Nickname or short name for the team (e.g., Cowboys)
 	Nickname string
 }

@@ -1,5 +1,5 @@
 CREATE TABLE teams (
-  team_id SERIAL PRIMARY KEY,
+  team_id BIGINT PRIMARY KEY,
   nickName VARCHAR(255) NOT NULL
 );
 

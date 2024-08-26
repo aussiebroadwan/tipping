@@ -22,7 +22,7 @@ func TestListCompetitions(t *testing.T) {
 func TestGetCompetitionByID(t *testing.T) {
 	ctx := context.Background()
 
-	competitionID := int32(111) // NRL
+	competitionID := int64(111) // NRL
 	competition, err := testQueries.GetCompetitionByID(ctx, competitionID)
 	if err != nil {
 		t.Fatalf("Failed to get competition by ID: %v", err)

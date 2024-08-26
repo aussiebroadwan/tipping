@@ -37,7 +37,7 @@ func TestCreateTeam(t *testing.T) {
 func TestGetTeamByID(t *testing.T) {
 	ctx := context.Background()
 
-	teamID := int32(500012) // Cowboys, from the previous test
+	teamID := int64(500012) // Cowboys, from the previous test
 	team, err := testQueries.GetTeamByID(ctx, teamID)
 	if err != nil {
 		t.Fatalf("Failed to get team by ID: %v", err)

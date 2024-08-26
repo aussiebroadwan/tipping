@@ -1,6 +1,6 @@
 CREATE TABLE fixtures (
-  id SERIAL PRIMARY KEY,
-  competition_id INTEGER NOT NULL REFERENCES competitions(id) ON DELETE CASCADE,
+  id BIGINT PRIMARY KEY,
+  competition_id BIGINT NOT NULL REFERENCES competitions(id) ON DELETE CASCADE,
   roundTitle VARCHAR(255) NOT NULL,
   matchState VARCHAR(50) NOT NULL,
   venue VARCHAR(255) NOT NULL,

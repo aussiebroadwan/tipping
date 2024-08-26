@@ -21,18 +21,18 @@ type Querier interface {
 	// If a team with the same team_id already exists, do nothing.
 	CreateTeam(ctx context.Context, arg CreateTeamParams) (*Team, error)
 	// Retrieve a specific competition by its unique identifier.
-	GetCompetitionByID(ctx context.Context, id int32) (*Competition, error)
+	GetCompetitionByID(ctx context.Context, id int64) (*Competition, error)
 	// Retrieve a specific fixture by its unique identifier.
 	// Useful for fetching details about a single fixture based on its ID.
-	GetFixtureByID(ctx context.Context, id int32) (*Fixture, error)
+	GetFixtureByID(ctx context.Context, id int64) (*Fixture, error)
 	// Retrieve fixtures for a specific competition, ordered by kickoff time.
 	// This query fetches all fixtures for a given competition ID, ordered by their
 	// kickoff time to display them in chronological order.
-	GetFixturesByCompetitionID(ctx context.Context, competitionID int32) ([]*Fixture, error)
+	GetFixturesByCompetitionID(ctx context.Context, competitionID int64) ([]*Fixture, error)
 	// Retrieve match details for a specific fixture by its unique fixture ID.
-	GetMatchDetailsByFixtureID(ctx context.Context, fixtureID int32) (*MatchDetail, error)
+	GetMatchDetailsByFixtureID(ctx context.Context, fixtureID int64) (*MatchDetail, error)
 	// Retrieve a specific team by its unique identifier.
-	GetTeamByID(ctx context.Context, teamID int32) (*Team, error)
+	GetTeamByID(ctx context.Context, teamID int64) (*Team, error)
 	// The competitions table is a static table that stores information about the
 	// competitions that are available in the system. Other tables in the system
 	// reference this table to establish a relationship.
@@ -46,7 +46,7 @@ type Querier interface {
 	// Retrieve all match details for a specific competition ID.
 	// This query performs a JOIN between match_details and fixtures to get all
 	// match details that are part of a specific competition.
-	ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int32) ([]*MatchDetail, error)
+	ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int64) ([]*MatchDetail, error)
 	// Retrieve all teams available in the system.
 	ListTeams(ctx context.Context) ([]*Team, error)
 	// Conditionally update fixture details based on provided arguments.

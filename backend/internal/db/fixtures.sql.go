@@ -21,7 +21,7 @@ RETURNING id, competition_id, roundtitle, matchstate, venue, venuecity, matchcen
 `
 
 type CreateFixtureParams struct {
-	CompetitionID  int32
+	CompetitionID  int64
 	Roundtitle     string
 	Matchstate     string
 	Venue          string
@@ -64,7 +64,7 @@ SELECT id, competition_id, roundtitle, matchstate, venue, venuecity, matchcentre
 
 // Retrieve a specific fixture by its unique identifier.
 // Useful for fetching details about a single fixture based on its ID.
-func (q *Queries) GetFixtureByID(ctx context.Context, id int32) (*Fixture, error) {
+func (q *Queries) GetFixtureByID(ctx context.Context, id int64) (*Fixture, error) {
 	row := q.db.QueryRow(ctx, getFixtureByID, id)
 	var i Fixture
 	err := row.Scan(
@@ -89,7 +89,7 @@ ORDER BY kickOffTime
 // Retrieve fixtures for a specific competition, ordered by kickoff time.
 // This query fetches all fixtures for a given competition ID, ordered by their
 // kickoff time to display them in chronological order.
-func (q *Queries) GetFixturesByCompetitionID(ctx context.Context, competitionID int32) ([]*Fixture, error) {
+func (q *Queries) GetFixturesByCompetitionID(ctx context.Context, competitionID int64) ([]*Fixture, error) {
 	rows, err := q.db.Query(ctx, getFixturesByCompetitionID, competitionID)
 	if err != nil {
 		return nil, err
@@ -168,8 +168,8 @@ RETURNING id, competition_id, roundtitle, matchstate, venue, venuecity, matchcen
 `
 
 type UpdateFixtureParams struct {
-	ID             int32
-	CompetitionId  *int32
+	ID             int64
+	CompetitionId  *int64
 	RoundTitle     *string
 	MatchState     *string
 	Venue          *string
