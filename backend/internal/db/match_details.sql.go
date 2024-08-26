@@ -122,6 +122,48 @@ func (q *Queries) ListMatchDetails(ctx context.Context) ([]*MatchDetail, error) 
 	return items, nil
 }
 
+const listMatchDetailsByCompetitionID = `-- name: ListMatchDetailsByCompetitionID :many
+SELECT md.fixture_id, md.hometeam_id, md.awayteam_id, md.hometeam_odds, md.awayteam_odds, md.hometeam_score, md.awayteam_score, md.hometeam_form, md.awayteam_form, md.winner_teamid
+FROM match_details md
+JOIN fixtures f ON md.fixture_id = f.id
+WHERE f.competition_id = $1
+ORDER BY f.kickOffTime
+`
+
+// Retrieve all match details for a specific competition ID.
+// This query performs a JOIN between match_details and fixtures to get all
+// match details that are part of a specific competition.
+func (q *Queries) ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int32) ([]*MatchDetail, error) {
+	rows, err := q.db.Query(ctx, listMatchDetailsByCompetitionID, competitionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*MatchDetail
+	for rows.Next() {
+		var i MatchDetail
+		if err := rows.Scan(
+			&i.FixtureID,
+			&i.HometeamID,
+			&i.AwayteamID,
+			&i.HometeamOdds,
+			&i.AwayteamOdds,
+			&i.HometeamScore,
+			&i.AwayteamScore,
+			&i.HometeamForm,
+			&i.AwayteamForm,
+			&i.WinnerTeamid,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateMatchDetail = `-- name: UpdateMatchDetail :one
 UPDATE match_details 
 SET 

@@ -6,6 +6,16 @@ SELECT * FROM match_details WHERE fixture_id = $1;
 -- Retrieve all match details available in the system.
 SELECT * FROM match_details;
 
+-- name: ListMatchDetailsByCompetitionID :many
+-- Retrieve all match details for a specific competition ID.
+-- This query performs a JOIN between match_details and fixtures to get all 
+-- match details that are part of a specific competition.
+SELECT md.*
+FROM match_details md
+JOIN fixtures f ON md.fixture_id = f.id
+WHERE f.competition_id = $1
+ORDER BY f.kickOffTime;
+
 -- name: CreateMatchDetail :one
 -- Insert a new match detail record into the match_details table.
 -- If a match detail with the same fixture_id already exists, do nothing.
