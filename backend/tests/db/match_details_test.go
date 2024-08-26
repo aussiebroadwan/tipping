@@ -64,7 +64,7 @@ func TestUpdateMatchDetail(t *testing.T) {
 	score2 := int32(28)
 
 	// Assume a match detail with fixture ID 1 exists
-	fixtureID := int32(1)
+	fixtureID := int64(1)
 	arg := db.UpdateMatchDetailParams{
 		FixtureID:     fixtureID,
 		HomeTeamScore: &score1,
@@ -85,7 +85,7 @@ func TestGetMatchDetailsByFixtureID(t *testing.T) {
 	ctx := context.Background()
 
 	// Assume a match detail with fixture ID 1 exists
-	fixtureID := int32(1)
+	fixtureID := int64(1)
 	matchDetail, err := testQueries.GetMatchDetailsByFixtureID(ctx, fixtureID)
 	if err != nil {
 		t.Fatalf("Failed to get match details by fixture ID: %v", err)
@@ -108,7 +108,7 @@ func TestListMatchDetails(t *testing.T) {
 func TestListMatchDetailsByCompetitionID(t *testing.T) {
 	ctx := context.Background()
 
-	competitionID := int32(111) // NRL
+	competitionID := int64(111) // NRL
 	matchDetails, err := testQueries.ListMatchDetailsByCompetitionID(ctx, competitionID)
 	if err != nil {
 		t.Fatalf("Failed to list match details by competition ID: %v", err)

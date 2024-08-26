@@ -14,7 +14,7 @@ SELECT id, name FROM competitions WHERE id = $1
 `
 
 // Retrieve a specific competition by its unique identifier.
-func (q *Queries) GetCompetitionByID(ctx context.Context, id int32) (*Competition, error) {
+func (q *Queries) GetCompetitionByID(ctx context.Context, id int64) (*Competition, error) {
 	row := q.db.QueryRow(ctx, getCompetitionByID, id)
 	var i Competition
 	err := row.Scan(&i.ID, &i.Name)

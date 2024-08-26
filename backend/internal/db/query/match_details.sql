@@ -32,14 +32,10 @@ RETURNING *;
 -- Only updates fields where the argument is not NULL.
 UPDATE match_details 
 SET 
-    homeTeam_id = COALESCE(sqlc.narg('homeTeam_id'), homeTeam_id), 
-    awayTeam_id = COALESCE(sqlc.narg('awayTeam_id'), awayTeam_id), 
     homeTeam_odds = COALESCE(sqlc.narg('homeTeam_odds'), homeTeam_odds), 
     awayTeam_odds = COALESCE(sqlc.narg('awayTeam_odds'), awayTeam_odds), 
     homeTeam_score = COALESCE(sqlc.narg('homeTeam_score'), homeTeam_score), 
     awayTeam_score = COALESCE(sqlc.narg('awayTeam_score'), awayTeam_score), 
-    homeTeam_form = COALESCE(sqlc.narg('homeTeam_form'), homeTeam_form), 
-    awayTeam_form = COALESCE(sqlc.narg('awayTeam_form'), awayTeam_form), 
     winner_teamId = COALESCE(sqlc.narg('winner_teamId'), winner_teamId)
 WHERE fixture_id = $1
 RETURNING *;

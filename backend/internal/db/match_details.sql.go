@@ -20,16 +20,16 @@ RETURNING fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, ho
 `
 
 type CreateMatchDetailParams struct {
-	FixtureID     int32
-	HometeamID    int32
-	AwayteamID    int32
+	FixtureID     int64
+	HometeamID    int64
+	AwayteamID    int64
 	HometeamOdds  *float64
 	AwayteamOdds  *float64
 	HometeamScore *int32
 	AwayteamScore *int32
 	HometeamForm  string
 	AwayteamForm  string
-	WinnerTeamid  *int32
+	WinnerTeamid  *int64
 }
 
 // Insert a new match detail record into the match_details table.
@@ -68,7 +68,7 @@ SELECT fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, homet
 `
 
 // Retrieve match details for a specific fixture by its unique fixture ID.
-func (q *Queries) GetMatchDetailsByFixtureID(ctx context.Context, fixtureID int32) (*MatchDetail, error) {
+func (q *Queries) GetMatchDetailsByFixtureID(ctx context.Context, fixtureID int64) (*MatchDetail, error) {
 	row := q.db.QueryRow(ctx, getMatchDetailsByFixtureID, fixtureID)
 	var i MatchDetail
 	err := row.Scan(
@@ -133,7 +133,7 @@ ORDER BY f.kickOffTime
 // Retrieve all match details for a specific competition ID.
 // This query performs a JOIN between match_details and fixtures to get all
 // match details that are part of a specific competition.
-func (q *Queries) ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int32) ([]*MatchDetail, error) {
+func (q *Queries) ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int64) ([]*MatchDetail, error) {
 	rows, err := q.db.Query(ctx, listMatchDetailsByCompetitionID, competitionID)
 	if err != nil {
 		return nil, err
@@ -167,30 +167,22 @@ func (q *Queries) ListMatchDetailsByCompetitionID(ctx context.Context, competiti
 const updateMatchDetail = `-- name: UpdateMatchDetail :one
 UPDATE match_details 
 SET 
-    homeTeam_id = COALESCE($2, homeTeam_id), 
-    awayTeam_id = COALESCE($3, awayTeam_id), 
-    homeTeam_odds = COALESCE($4, homeTeam_odds), 
-    awayTeam_odds = COALESCE($5, awayTeam_odds), 
-    homeTeam_score = COALESCE($6, homeTeam_score), 
-    awayTeam_score = COALESCE($7, awayTeam_score), 
-    homeTeam_form = COALESCE($8, homeTeam_form), 
-    awayTeam_form = COALESCE($9, awayTeam_form), 
-    winner_teamId = COALESCE($10, winner_teamId)
+    homeTeam_odds = COALESCE($2, homeTeam_odds), 
+    awayTeam_odds = COALESCE($3, awayTeam_odds), 
+    homeTeam_score = COALESCE($4, homeTeam_score), 
+    awayTeam_score = COALESCE($5, awayTeam_score), 
+    winner_teamId = COALESCE($6, winner_teamId)
 WHERE fixture_id = $1
 RETURNING fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, hometeam_score, awayteam_score, hometeam_form, awayteam_form, winner_teamid
 `
 
 type UpdateMatchDetailParams struct {
-	FixtureID     int32
-	HomeTeamID    *int32
-	AwayTeamID    *int32
+	FixtureID     int64
 	HomeTeamOdds  *float64
 	AwayTeamOdds  *float64
 	HomeTeamScore *int32
 	AwayTeamScore *int32
-	HomeTeamForm  *string
-	AwayTeamForm  *string
-	WinnerTeamId  *int32
+	WinnerTeamId  *int64
 }
 
 // Conditionally update match detail fields based on provided arguments.
@@ -198,14 +190,10 @@ type UpdateMatchDetailParams struct {
 func (q *Queries) UpdateMatchDetail(ctx context.Context, arg UpdateMatchDetailParams) (*MatchDetail, error) {
 	row := q.db.QueryRow(ctx, updateMatchDetail,
 		arg.FixtureID,
-		arg.HomeTeamID,
-		arg.AwayTeamID,
 		arg.HomeTeamOdds,
 		arg.AwayTeamOdds,
 		arg.HomeTeamScore,
 		arg.AwayTeamScore,
-		arg.HomeTeamForm,
-		arg.AwayTeamForm,
 		arg.WinnerTeamId,
 	)
 	var i MatchDetail

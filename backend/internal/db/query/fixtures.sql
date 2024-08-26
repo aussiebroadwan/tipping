@@ -23,9 +23,9 @@ ORDER BY kickOffTime;
 -- competition ID, round title, match state, venue, venue city, match center URL,
 -- and kickoff time.
 INSERT INTO fixtures (
-  competition_id, roundTitle, matchState, venue, venueCity, matchCentreUrl, kickOffTime
+  id, competition_id, roundTitle, matchState, venue, venueCity, matchCentreUrl, kickOffTime
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6, $7, $8
 )
 RETURNING *;
 
@@ -35,13 +35,6 @@ RETURNING *;
 -- are not NULL. It uses the COALESCE function to retain the existing value if 
 -- the argument is NULL.
 UPDATE fixtures 
-SET 
-    competition_id = COALESCE(sqlc.narg('competitionId'), competition_id),
-    roundTitle = COALESCE(sqlc.narg('roundTitle'), roundTitle),
-    matchState = COALESCE(sqlc.narg('matchState'), matchState),
-    venue = COALESCE(sqlc.narg('venue'), venue),
-    venueCity = COALESCE(sqlc.narg('venueCity'), venueCity),
-    matchCentreUrl = COALESCE(sqlc.narg('matchCentreUrl'), matchCentreUrl),
-    kickOffTime = COALESCE(sqlc.narg('kickOffTime'), kickOffTime)
+SET matchState = COALESCE(sqlc.narg('matchState'), matchState)
 WHERE id = $1
 RETURNING *;

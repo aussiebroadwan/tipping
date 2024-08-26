@@ -13,15 +13,16 @@ import (
 
 const createFixture = `-- name: CreateFixture :one
 INSERT INTO fixtures (
-  competition_id, roundTitle, matchState, venue, venueCity, matchCentreUrl, kickOffTime
+  id, competition_id, roundTitle, matchState, venue, venueCity, matchCentreUrl, kickOffTime
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6, $7, $8
 )
 RETURNING id, competition_id, roundtitle, matchstate, venue, venuecity, matchcentreurl, kickofftime
 `
 
 type CreateFixtureParams struct {
-	CompetitionID  int32
+	ID             int64
+	CompetitionID  int64
 	Roundtitle     string
 	Matchstate     string
 	Venue          string
@@ -36,6 +37,7 @@ type CreateFixtureParams struct {
 // and kickoff time.
 func (q *Queries) CreateFixture(ctx context.Context, arg CreateFixtureParams) (*Fixture, error) {
 	row := q.db.QueryRow(ctx, createFixture,
+		arg.ID,
 		arg.CompetitionID,
 		arg.Roundtitle,
 		arg.Matchstate,
@@ -64,7 +66,7 @@ SELECT id, competition_id, roundtitle, matchstate, venue, venuecity, matchcentre
 
 // Retrieve a specific fixture by its unique identifier.
 // Useful for fetching details about a single fixture based on its ID.
-func (q *Queries) GetFixtureByID(ctx context.Context, id int32) (*Fixture, error) {
+func (q *Queries) GetFixtureByID(ctx context.Context, id int64) (*Fixture, error) {
 	row := q.db.QueryRow(ctx, getFixtureByID, id)
 	var i Fixture
 	err := row.Scan(
@@ -89,7 +91,7 @@ ORDER BY kickOffTime
 // Retrieve fixtures for a specific competition, ordered by kickoff time.
 // This query fetches all fixtures for a given competition ID, ordered by their
 // kickoff time to display them in chronological order.
-func (q *Queries) GetFixturesByCompetitionID(ctx context.Context, competitionID int32) ([]*Fixture, error) {
+func (q *Queries) GetFixturesByCompetitionID(ctx context.Context, competitionID int64) ([]*Fixture, error) {
 	rows, err := q.db.Query(ctx, getFixturesByCompetitionID, competitionID)
 	if err != nil {
 		return nil, err
@@ -155,27 +157,14 @@ func (q *Queries) ListFixtures(ctx context.Context) ([]*Fixture, error) {
 
 const updateFixture = `-- name: UpdateFixture :one
 UPDATE fixtures 
-SET 
-    competition_id = COALESCE($2, competition_id),
-    roundTitle = COALESCE($3, roundTitle),
-    matchState = COALESCE($4, matchState),
-    venue = COALESCE($5, venue),
-    venueCity = COALESCE($6, venueCity),
-    matchCentreUrl = COALESCE($7, matchCentreUrl),
-    kickOffTime = COALESCE($8, kickOffTime)
+SET matchState = COALESCE($2, matchState)
 WHERE id = $1
 RETURNING id, competition_id, roundtitle, matchstate, venue, venuecity, matchcentreurl, kickofftime
 `
 
 type UpdateFixtureParams struct {
-	ID             int32
-	CompetitionId  *int32
-	RoundTitle     *string
-	MatchState     *string
-	Venue          *string
-	VenueCity      *string
-	MatchCentreUrl *string
-	KickOffTime    pgtype.Timestamp
+	ID         int64
+	MatchState *string
 }
 
 // Conditionally update fixture details based on provided arguments.
@@ -183,16 +172,7 @@ type UpdateFixtureParams struct {
 // are not NULL. It uses the COALESCE function to retain the existing value if
 // the argument is NULL.
 func (q *Queries) UpdateFixture(ctx context.Context, arg UpdateFixtureParams) (*Fixture, error) {
-	row := q.db.QueryRow(ctx, updateFixture,
-		arg.ID,
-		arg.CompetitionId,
-		arg.RoundTitle,
-		arg.MatchState,
-		arg.Venue,
-		arg.VenueCity,
-		arg.MatchCentreUrl,
-		arg.KickOffTime,
-	)
+	row := q.db.QueryRow(ctx, updateFixture, arg.ID, arg.MatchState)
 	var i Fixture
 	err := row.Scan(
 		&i.ID,
