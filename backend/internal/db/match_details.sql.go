@@ -65,7 +65,11 @@ func (q *Queries) CreateMatchDetail(ctx context.Context, arg CreateMatchDetailPa
 }
 
 const getMatchDetailsByFixtureID = `-- name: GetMatchDetailsByFixtureID :one
-SELECT md.fixture_id, md.hometeam_id, md.awayteam_id, md.hometeam_odds, md.awayteam_odds, md.hometeam_score, md.awayteam_score, md.hometeam_form, md.awayteam_form, md.winner_teamid, f.id, f.competition_id, f.roundtitle, f.matchstate, f.venue, f.venuecity, f.matchcentreurl, f.kickofftime, home_team.id, home_team.nickname, home_team.competition_id, away_team.id, away_team.nickname, away_team.competition_id
+SELECT 
+  md.fixture_id, md.hometeam_id, md.awayteam_id, md.hometeam_odds, md.awayteam_odds, md.hometeam_score, md.awayteam_score, md.hometeam_form, md.awayteam_form, md.winner_teamid, 
+  f.id, f.competition_id, f.roundtitle, f.matchstate, f.venue, f.venuecity, f.matchcentreurl, f.kickofftime, 
+  home_team.id, home_team.nickname, home_team.competition_id, 
+  away_team.id, away_team.nickname, away_team.competition_id
 FROM match_details md
 JOIN fixtures f ON md.fixture_id = f.id
 JOIN teams home_team ON md.homeTeam_id = home_team.id
@@ -115,7 +119,11 @@ func (q *Queries) GetMatchDetailsByFixtureID(ctx context.Context, fixtureID int6
 }
 
 const listMatchDetails = `-- name: ListMatchDetails :many
-SELECT md.fixture_id, md.hometeam_id, md.awayteam_id, md.hometeam_odds, md.awayteam_odds, md.hometeam_score, md.awayteam_score, md.hometeam_form, md.awayteam_form, md.winner_teamid, f.id, f.competition_id, f.roundtitle, f.matchstate, f.venue, f.venuecity, f.matchcentreurl, f.kickofftime, home_team.id, home_team.nickname, home_team.competition_id, away_team.id, away_team.nickname, away_team.competition_id
+SELECT 
+  md.fixture_id, md.hometeam_id, md.awayteam_id, md.hometeam_odds, md.awayteam_odds, md.hometeam_score, md.awayteam_score, md.hometeam_form, md.awayteam_form, md.winner_teamid, 
+  f.id, f.competition_id, f.roundtitle, f.matchstate, f.venue, f.venuecity, f.matchcentreurl, f.kickofftime, 
+  home_team.id, home_team.nickname, home_team.competition_id, 
+  away_team.id, away_team.nickname, away_team.competition_id
 FROM match_details md
 JOIN fixtures f ON md.fixture_id = f.id
 JOIN teams home_team ON md.homeTeam_id = home_team.id
@@ -177,7 +185,11 @@ func (q *Queries) ListMatchDetails(ctx context.Context) ([]*ListMatchDetailsRow,
 }
 
 const listMatchDetailsByCompetitionID = `-- name: ListMatchDetailsByCompetitionID :many
-SELECT md.fixture_id, md.hometeam_id, md.awayteam_id, md.hometeam_odds, md.awayteam_odds, md.hometeam_score, md.awayteam_score, md.hometeam_form, md.awayteam_form, md.winner_teamid, f.id, f.competition_id, f.roundtitle, f.matchstate, f.venue, f.venuecity, f.matchcentreurl, f.kickofftime, home_team.id, home_team.nickname, home_team.competition_id, away_team.id, away_team.nickname, away_team.competition_id
+SELECT 
+  md.fixture_id, md.hometeam_id, md.awayteam_id, md.hometeam_odds, md.awayteam_odds, md.hometeam_score, md.awayteam_score, md.hometeam_form, md.awayteam_form, md.winner_teamid, 
+  f.id, f.competition_id, f.roundtitle, f.matchstate, f.venue, f.venuecity, f.matchcentreurl, f.kickofftime, 
+  home_team.id, home_team.nickname, home_team.competition_id, 
+  away_team.id, away_team.nickname, away_team.competition_id
 FROM match_details md
 JOIN fixtures f ON md.fixture_id = f.id
 JOIN teams home_team ON md.homeTeam_id = home_team.id
@@ -230,42 +242,6 @@ func (q *Queries) ListMatchDetailsByCompetitionID(ctx context.Context, competiti
 			&i.Team_2.ID,
 			&i.Team_2.Nickname,
 			&i.Team_2.CompetitionID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listRawDetails = `-- name: ListRawDetails :many
-SELECT fixture_id, hometeam_id, awayteam_id, hometeam_odds, awayteam_odds, hometeam_score, awayteam_score, hometeam_form, awayteam_form, winner_teamid FROM match_details
-`
-
-// Retrieve all match details available in the system.
-func (q *Queries) ListRawDetails(ctx context.Context) ([]*MatchDetail, error) {
-	rows, err := q.db.Query(ctx, listRawDetails)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []*MatchDetail
-	for rows.Next() {
-		var i MatchDetail
-		if err := rows.Scan(
-			&i.FixtureID,
-			&i.HometeamID,
-			&i.AwayteamID,
-			&i.HometeamOdds,
-			&i.AwayteamOdds,
-			&i.HometeamScore,
-			&i.AwayteamScore,
-			&i.HometeamForm,
-			&i.AwayteamForm,
-			&i.WinnerTeamid,
 		); err != nil {
 			return nil, err
 		}

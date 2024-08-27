@@ -1,6 +1,10 @@
 -- name: GetMatchDetailsByFixtureID :one
 -- Retrieve match details for a specific fixture by its unique fixture ID.
-SELECT sqlc.embed(md), sqlc.embed(f), sqlc.embed(home_team), sqlc.embed(away_team)
+SELECT 
+  sqlc.embed(md), 
+  sqlc.embed(f), 
+  sqlc.embed(home_team), 
+  sqlc.embed(away_team)
 FROM match_details md
 JOIN fixtures f ON md.fixture_id = f.id
 JOIN teams home_team ON md.homeTeam_id = home_team.id
@@ -10,23 +14,26 @@ ORDER BY f.kickOffTime;
 
 -- name: ListMatchDetails :many
 -- Retrieve all match details available in the system.
-SELECT sqlc.embed(md), sqlc.embed(f), sqlc.embed(home_team), sqlc.embed(away_team)
+SELECT 
+  sqlc.embed(md), 
+  sqlc.embed(f), 
+  sqlc.embed(home_team), 
+  sqlc.embed(away_team)
 FROM match_details md
 JOIN fixtures f ON md.fixture_id = f.id
 JOIN teams home_team ON md.homeTeam_id = home_team.id
 JOIN teams away_team ON md.awayTeam_id = away_team.id
 ORDER BY f.kickOffTime;
 
--- name: ListRawDetails :many
--- Retrieve all match details available in the system.
-SELECT * FROM match_details;
-
-
 -- name: ListMatchDetailsByCompetitionID :many
 -- Retrieve all match details for a specific competition ID.
 -- This query performs a JOIN between match_details and fixtures to get all 
 -- match details that are part of a specific competition.
-SELECT sqlc.embed(md), sqlc.embed(f), sqlc.embed(home_team), sqlc.embed(away_team)
+SELECT 
+  sqlc.embed(md), 
+  sqlc.embed(f), 
+  sqlc.embed(home_team), 
+  sqlc.embed(away_team)
 FROM match_details md
 JOIN fixtures f ON md.fixture_id = f.id
 JOIN teams home_team ON md.homeTeam_id = home_team.id
