@@ -8,17 +8,11 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/aussiebroadwan/tipping/backend/config"
 	"github.com/aussiebroadwan/tipping/backend/internal/db"
 	"github.com/aussiebroadwan/tipping/backend/internal/services"
 
 	"github.com/jackc/pgx/v5"
-)
-
-const (
-	NRLCompetitionID                 = 111
-	NRLWCompetitionID                = 161
-	StateOfOriginCompetitionID       = 116
-	StateOfOriginWomensCompetitionID = 156
 )
 
 var lg *slog.Logger
@@ -90,10 +84,10 @@ func main() {
 
 	// Define the competition IDs you want to fetch data for
 	competitionIDs := []int64{
-		NRLCompetitionID,
-		NRLWCompetitionID,
-		StateOfOriginCompetitionID,
-		StateOfOriginWomensCompetitionID,
+		config.CompetitionNRL,
+		config.CompetitionNRLW,
+		config.CompetitionStateOfOrigin,
+		config.CompetitionStateOfOriginWomens,
 	}
 
 	// Initialize and start the scheduled service
