@@ -17,6 +17,10 @@ JOIN teams home_team ON md.homeTeam_id = home_team.id
 JOIN teams away_team ON md.awayTeam_id = away_team.id
 ORDER BY f.kickOffTime;
 
+-- name: ListRawDetails :many
+-- Retrieve all match details available in the system.
+SELECT * FROM match_details;
+
 
 -- name: ListMatchDetailsByCompetitionID :many
 -- Retrieve all match details for a specific competition ID.

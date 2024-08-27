@@ -151,20 +151,21 @@ func (s *NRLDataService) createOrUpdateFixture(fixtureID int64, compID int, fixt
 // storeTeam stores a team in the database, creating it if it does not exist.
 func (s *NRLDataService) storeTeam(team models.NRLTeam, competitionId int) error {
 	// Check if team exists
-	_, err := s.queries.GetTeamByID(s.ctx, int64(team.ID))
-	if err == nil {
+	checkTeam, _ := s.queries.GetTeamByID(s.ctx, int64(team.ID))
+	if checkTeam.ID == int64(team.ID) {
 		return nil
 	}
 
 	// Create team
-	_, err = s.queries.CreateTeam(s.ctx, db.CreateTeamParams{
-		TeamID:        int64(team.ID),
+	_, err := s.queries.CreateTeam(s.ctx, db.CreateTeamParams{
+		ID:            int64(team.ID),
 		Nickname:      team.Name,
 		CompetitionID: int64(competitionId),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to store team: %w", err)
 	}
+
 	return nil
 }
 
@@ -203,6 +204,7 @@ func (s *NRLDataService) storeMatchDetails(fixtureID int64, fixture models.NRLFi
 	if err != nil && err.Error() != "no rows in result set" {
 		return fmt.Errorf("failed to store match details: %w", err)
 	}
+
 	return nil
 }
 

@@ -14,8 +14,9 @@ func TestCreateMatchDetail(t *testing.T) {
 	odd2 := float64(2.49)
 
 	homeTeam := db.CreateTeamParams{
-		TeamID:   500001,
-		Nickname: "homeTeam",
+		ID:            500001,
+		Nickname:      "homeTeam",
+		CompetitionID: 111,
 	}
 
 	_, err := testQueries.CreateTeam(ctx, homeTeam)
@@ -24,8 +25,9 @@ func TestCreateMatchDetail(t *testing.T) {
 	}
 
 	awayTeam := db.CreateTeamParams{
-		TeamID:   500002,
-		Nickname: "awayTeam",
+		ID:            500002,
+		Nickname:      "awayTeam",
+		CompetitionID: 111,
 	}
 
 	_, err = testQueries.CreateTeam(ctx, awayTeam)

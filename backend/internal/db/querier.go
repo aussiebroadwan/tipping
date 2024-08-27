@@ -32,7 +32,7 @@ type Querier interface {
 	// Retrieve match details for a specific fixture by its unique fixture ID.
 	GetMatchDetailsByFixtureID(ctx context.Context, fixtureID int64) (*GetMatchDetailsByFixtureIDRow, error)
 	// Retrieve a specific team by its unique identifier.
-	GetTeamByID(ctx context.Context, teamID int64) (*Team, error)
+	GetTeamByID(ctx context.Context, id int64) (*Team, error)
 	// The competitions table is a static table that stores information about the
 	// competitions that are available in the system. Other tables in the system
 	// reference this table to establish a relationship.
@@ -47,6 +47,8 @@ type Querier interface {
 	// This query performs a JOIN between match_details and fixtures to get all
 	// match details that are part of a specific competition.
 	ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int64) ([]*ListMatchDetailsByCompetitionIDRow, error)
+	// Retrieve all match details available in the system.
+	ListRawDetails(ctx context.Context) ([]*MatchDetail, error)
 	// Retrieve all teams available in the system.
 	ListTeams(ctx context.Context) ([]*Team, error)
 	// Conditionally update fixture details based on provided arguments.

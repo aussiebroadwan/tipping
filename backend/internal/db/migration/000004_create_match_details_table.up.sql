@@ -1,14 +1,14 @@
 CREATE TABLE match_details (
   fixture_id BIGINT PRIMARY KEY REFERENCES fixtures(id) ON DELETE CASCADE,
-  homeTeam_id BIGINT NOT NULL REFERENCES teams(team_id),
-  awayTeam_id BIGINT NOT NULL REFERENCES teams(team_id),
+  homeTeam_id BIGINT NOT NULL REFERENCES teams(id),
+  awayTeam_id BIGINT NOT NULL REFERENCES teams(id),
   homeTeam_odds FLOAT,
   awayTeam_odds FLOAT,
   homeTeam_score INTEGER,
   awayTeam_score INTEGER,
   homeTeam_form VARCHAR(5) NOT NULL,
   awayTeam_form VARCHAR(5) NOT NULL,
-  winner_teamId BIGINT REFERENCES teams(team_id)
+  winner_teamId BIGINT REFERENCES teams(id)
 );
 
 COMMENT ON COLUMN match_details.fixture_id IS 'Foreign key referencing fixtures table';
