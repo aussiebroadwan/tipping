@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/aussiebroadwan/tipping/backend/config"
 	"github.com/aussiebroadwan/tipping/backend/internal/db"
 	"github.com/aussiebroadwan/tipping/backend/internal/models"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -61,6 +62,23 @@ func (s *NRLDataService) StoreFixtureAndDetails(fixture models.NRLFixture) error
 		return fmt.Errorf("failed to store match details: %w", err)
 	}
 
+	return nil
+}
+
+func (s *NRLDataService) UpdateMatchState(fixtureID string, matchState string) error {
+	// Parse fixture ID
+	id, err := strconv.ParseInt(fixtureID, 10, 64)
+	if err != nil {
+		return fmt.Errorf("failed to parse fixture ID: %w", err)
+	}
+
+	_, err = s.queries.UpdateFixture(s.ctx, db.UpdateFixtureParams{
+		ID:         id,
+		MatchState: &matchState,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to update fixture: %w", err)
+	}
 	return nil
 }
 
@@ -191,7 +209,7 @@ func parseForm(form []models.NRLForm) string {
 
 func parseWinnerTeamID(fixture models.NRLFixture) *int64 {
 
-	if fixture.MatchState != "FullTime" {
+	if fixture.MatchState != config.MatchStateFullTime {
 		return nil
 	}
 
