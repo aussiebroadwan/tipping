@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 
 	"github.com/aussiebroadwan/tipping/backend/config"
 	"github.com/aussiebroadwan/tipping/backend/internal/db"
+	"github.com/aussiebroadwan/tipping/backend/internal/handlers"
 	"github.com/aussiebroadwan/tipping/backend/internal/services"
 
 	"github.com/jackc/pgx/v5"
@@ -80,7 +82,12 @@ func main() {
 
 	// Initialize services
 	nrlService := services.NewNRLService(os.Getenv("NRL_API_BASE_URL"))
-	dataService := services.NewNRLDataService(queries, ctx)
+	nrlDataService := services.NewNRLDataService(queries, ctx)
+	apiDataService := services.NewAPIDataService(queries, ctx)
+
+	mux := http.NewServeMux()
+	handlers.RegisterRoutes(mux, apiDataService)
+	http.ListenAndServe(":8080", mux)
 
 	// Define the competition IDs you want to fetch data for
 	competitionIDs := []int64{
@@ -91,7 +98,7 @@ func main() {
 	}
 
 	// Initialize and start the scheduled service
-	scheduledService := services.NewNRLScheduledService(nrlService, dataService, competitionIDs)
+	scheduledService := services.NewNRLScheduledService(nrlService, nrlDataService, competitionIDs)
 	go scheduledService.Start(ctx)
 
 	// Signal handler for graceful shutdown
