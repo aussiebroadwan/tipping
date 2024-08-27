@@ -164,14 +164,21 @@ func (s *NRLScheduledService) checkMatchStatus(ctx context.Context, fixture mode
 	} else {
 		log.Printf("Match ID %s is FullTime", fixture.ID)
 
+		// Remove match from the scheduled set after it is "FullTime"
+		s.mu.Lock()
+		delete(s.scheduledMatches, fixture.ID)
+		s.mu.Unlock()
+
+		// Update the State
 		if err = s.dataService.UpdateMatchState(fixture.ID, config.MatchStateFullTime); err != nil {
 			log.Printf("Error updating match state for fixture %s: %v", fixture.ID, err)
 			return
 		}
 
-		// Remove match from the scheduled set after it is "FullTime"
-		s.mu.Lock()
-		delete(s.scheduledMatches, fixture.ID)
-		s.mu.Unlock()
+		// Update the Score and Winner
+		if err = s.dataService.UpdateMatchScores(fixture.ID, fixture.HomeTeam.ID, fixture.HomeTeam.Score, fixture.AwayTeam.ID, fixture.AwayTeam.Score); err != nil {
+			log.Printf("Error updating match scores for fixture %s: %v", fixture.ID, err)
+			return
+		}
 	}
 }

@@ -82,6 +82,37 @@ func (s *NRLDataService) UpdateMatchState(fixtureID string, matchState string) e
 	return nil
 }
 
+func (s *NRLDataService) UpdateMatchScores(fixtureID string, homeId int, homeScore *int, awayId int, awayScore *int) error {
+	// Parse fixture ID
+	id, err := strconv.ParseInt(fixtureID, 10, 64)
+	if err != nil {
+		return fmt.Errorf("failed to parse fixture ID: %w", err)
+	}
+
+	if homeScore == nil || awayScore == nil {
+		return fmt.Errorf("home and away scores are required")
+	}
+
+	homeScore32 := int32(*homeScore)
+	awayScore32 := int32(*awayScore)
+
+	winnerId := int64(homeId)
+	if *homeScore < *awayScore {
+		winnerId = int64(awayId)
+	}
+
+	_, err = s.queries.UpdateMatchDetail(s.ctx, db.UpdateMatchDetailParams{
+		FixtureID:     id,
+		HomeTeamScore: &homeScore32,
+		AwayTeamScore: &awayScore32,
+		WinnerTeamId:  &winnerId,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to update match scores: %w", err)
+	}
+	return nil
+}
+
 // createOrUpdateFixture creates or updates a fixture in the database.
 func (s *NRLDataService) createOrUpdateFixture(fixtureID int64, compID int, fixture models.NRLFixture, kickOffTime time.Time) error {
 	pgxKickOffTime := pgtype.Timestamp{Time: kickOffTime, Valid: true}
