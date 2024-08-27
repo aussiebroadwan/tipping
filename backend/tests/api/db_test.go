@@ -5,11 +5,14 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/aussiebroadwan/tipping/backend/internal/db"
+	"github.com/aussiebroadwan/tipping/backend/internal/handlers"
+	"github.com/aussiebroadwan/tipping/backend/internal/services"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -23,8 +26,10 @@ import (
 )
 
 var (
-	testDB      *pgxpool.Pool
-	testQueries *db.Queries
+	testDB        *pgxpool.Pool
+	testQueries   *db.Queries
+	handlerRouter *http.ServeMux
+	dataService   *services.APIDataService
 )
 
 // TestMain sets up the test environment by initializing the PostgreSQL container,
@@ -64,6 +69,13 @@ func TestMain(m *testing.M) {
 	// Initialise test queries
 	testQueries = db.New(testDB)
 	seedDatabase()
+
+	// Initialise API data service for testing
+	dataService = services.NewAPIDataService(testQueries, context.Background())
+
+	// Initialise handler router for testing the API requests
+	handlerRouter = http.NewServeMux()
+	handlers.RegisterRoutes(handlerRouter, dataService)
 
 	// Run tests
 	os.Exit(m.Run())

@@ -8,6 +8,7 @@ import (
 
 	"github.com/aussiebroadwan/tipping/backend/config"
 	"github.com/aussiebroadwan/tipping/backend/internal/services"
+	"github.com/aussiebroadwan/tipping/backend/internal/utils"
 )
 
 // Handlers struct to hold the data service.
@@ -80,7 +81,7 @@ func (h *Handlers) GetFixtures(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 "Invalid competition_id"
 // @Router /api/v1/fixtures/{competition_id} [get]
 func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request) {
-	competitionId := r.URL.Query().Get("competition_id")
+	competitionId := r.PathValue("competition_id")
 	if competitionId == "" {
 		http.Error(w, "Missing competition_id query parameter", http.StatusBadRequest)
 		return
@@ -95,7 +96,7 @@ func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request
 
 	// Check if the competition exists
 	competitions := []int{config.CompetitionNRL, config.CompetitionNRLW, config.CompetitionStateOfOrigin, config.CompetitionStateOfOriginWomens}
-	if slices.Contains(competitions, competitionID) {
+	if !slices.Contains(competitions, competitionID) {
 		http.Error(w, "Invalid competition_id", http.StatusBadRequest)
 		return
 	}
@@ -124,8 +125,8 @@ func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request
 // @Router /api/v1/fixtures/{competition_id}/{match_id} [get]
 func (h *Handlers) GetMatchDetails(w http.ResponseWriter, r *http.Request) {
 	// Retrieve query parameters
-	competitionId := r.URL.Query().Get("competition_id")
-	matchId := r.URL.Query().Get("match_id")
+	competitionId := r.PathValue("competition_id")
+	matchId := r.PathValue("match_id")
 
 	// Check for missing parameters
 	if competitionId == "" {
@@ -155,6 +156,13 @@ func (h *Handlers) GetMatchDetails(w http.ResponseWriter, r *http.Request) {
 	validCompetitions := []int{config.CompetitionNRL, config.CompetitionNRLW, config.CompetitionStateOfOrigin, config.CompetitionStateOfOriginWomens}
 	if !slices.Contains(validCompetitions, competitionID) {
 		http.Error(w, "Invalid competition_id", http.StatusBadRequest)
+		return
+	}
+
+	// Parse match ID
+	_, comp, _, _ := utils.ParseMatchID(matchId)
+	if !slices.Contains(validCompetitions, comp) {
+		http.Error(w, "Invalid match_id", http.StatusBadRequest)
 		return
 	}
 

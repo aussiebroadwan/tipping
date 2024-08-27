@@ -9,6 +9,7 @@ import (
 	"github.com/aussiebroadwan/tipping/backend/config"
 	"github.com/aussiebroadwan/tipping/backend/internal/db"
 	"github.com/aussiebroadwan/tipping/backend/internal/models"
+	"github.com/aussiebroadwan/tipping/backend/internal/utils"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -35,7 +36,7 @@ func (s *NRLDataService) StoreFixtureAndDetails(fixture models.NRLFixture) error
 	}
 
 	// Parse match ID components
-	_, compID, _, _ := parseMatchID(fixture.ID)
+	_, compID, _, _ := utils.ParseMatchID(fixture.ID)
 
 	// Parse kickoff time
 	kickOffTime, err := time.Parse(time.RFC3339, fixture.KickOffTime)
@@ -257,13 +258,4 @@ func parseWinnerTeamID(fixture models.NRLFixture) *int64 {
 		}
 	}
 	return nil
-}
-
-func parseMatchID(id string) (season, competition, round, game int) {
-	season, _ = strconv.Atoi(id[0:4])
-	competition, _ = strconv.Atoi(id[4:7])
-	round, _ = strconv.Atoi(id[7:9])
-	game, _ = strconv.Atoi(string(id[9]))
-
-	return
 }

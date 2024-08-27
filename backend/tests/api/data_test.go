@@ -1,16 +1,10 @@
 package api
 
 import (
-	"context"
 	"testing"
-
-	"github.com/aussiebroadwan/tipping/backend/internal/services"
 )
 
 func TestGetCompetitions(t *testing.T) {
-	ctx := context.Background()
-	dataService := services.NewAPIDataService(testQueries, ctx)
-
 	competitions, err := dataService.GetCompetitions()
 	if err != nil {
 		t.Fatalf("Failed to get competitions: %v", err)
@@ -31,9 +25,6 @@ func TestGetCompetitions(t *testing.T) {
 }
 
 func TestGetFixtures(t *testing.T) {
-	ctx := context.Background()
-	dataService := services.NewAPIDataService(testQueries, ctx)
-
 	fixtures, err := dataService.GetFixtures()
 	if err != nil {
 		t.Fatalf("Failed to get fixtures: %v", err)
@@ -45,9 +36,6 @@ func TestGetFixtures(t *testing.T) {
 }
 
 func TestGetFixtureByID(t *testing.T) {
-	ctx := context.Background()
-	dataService := services.NewAPIDataService(testQueries, ctx)
-
 	fixtureID := int64(20241112610)
 	fixture, err := dataService.GetFixtureDetails(fixtureID)
 	if err != nil {
@@ -68,9 +56,6 @@ func TestGetFixtureByID(t *testing.T) {
 }
 
 func TestGetCompetitionFixtures(t *testing.T) {
-	ctx := context.Background()
-	dataService := services.NewAPIDataService(testQueries, ctx)
-
 	competitionID := int64(111) // NRL
 	fixtures, err := dataService.GetCompetitionFixtures(competitionID)
 	if err != nil {
@@ -83,9 +68,6 @@ func TestGetCompetitionFixtures(t *testing.T) {
 }
 
 func TestCompetitionsFixturesNRLW(t *testing.T) {
-	ctx := context.Background()
-	dataService := services.NewAPIDataService(testQueries, ctx)
-
 	competitionID := int64(161) // NRLW
 	fixtures, err := dataService.GetCompetitionFixtures(competitionID)
 	if err != nil {
