@@ -2,14 +2,14 @@ package models
 
 import "time"
 
-// Competition represents a competition in the API response.
-type Competition struct {
-	ID   int64  `json:"id"`   // Unique identifier for the competition
-	Name string `json:"name"` // Name of the competition (e.g., "NRL", "NRLW")
+// APICompetition represents a competition in the API response.
+type APICompetition struct {
+	ID   int64  `json:"id" example:"111"`   // Unique identifier for the competition
+	Name string `json:"name" example:"NRL"` // Name of the competition (e.g., "NRL", "NRLW")
 }
 
-// Fixture represents a fixture in the API response.
-type Fixture struct {
+// APIFixture represents a fixture in the API response.
+type APIFixture struct {
 	ID             int64     `json:"id"`               // Unique identifier for the fixture
 	CompetitionID  int64     `json:"competition_id"`   // The competition ID this fixture belongs to
 	RoundTitle     string    `json:"round_title"`      // The title of the round (e.g., "Round 22")
@@ -20,14 +20,14 @@ type Fixture struct {
 	KickOffTime    time.Time `json:"kick_off_time"`    // Kickoff time of the match in RFC3339 format
 }
 
-// Team represents a team in the API response.
-type Team struct {
+// APITeam represents a team in the API response.
+type APITeam struct {
 	ID       int64  `json:"id"`       // Unique identifier for the team
 	Nickname string `json:"nickname"` // Nickname of the team (e.g., "Cowboys")
 }
 
-// MatchDetail represents the detailed information of a match in the API response.
-type MatchDetail struct {
+// APIMatchDetail represents the detailed information of a match in the API response.
+type APIMatchDetail struct {
 	FixtureID     int64    `json:"fixture_id"`      // Unique identifier for the fixture (match)
 	HomeTeamID    int64    `json:"home_team_id"`    // ID of the home team
 	AwayTeamID    int64    `json:"away_team_id"`    // ID of the away team
@@ -40,7 +40,7 @@ type MatchDetail struct {
 	WinnerTeamID  *int64   `json:"winner_team_id"`  // ID of the winning team, if available
 }
 
-// ErrorResponse represents the structure of an error response in the API.
-type ErrorResponse struct {
+// APIErrorResponse represents the structure of an error response in the API.
+type APIErrorResponse struct {
 	Message string `json:"message"` // Error message describing what went wrong
 }

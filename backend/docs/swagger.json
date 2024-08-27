@@ -1,0 +1,49 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is the API for the Tipping Application to interact with NRL data.",
+        "title": "Tipping API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/v1/competitions": {
+            "get": {
+                "description": "Get all competitions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "competitions"
+                ],
+                "summary": "Retrieve a list of all available competitions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.APICompetition"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.APICompetition": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "Unique identifier for the competition",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name of the competition (e.g., \"NRL\", \"NRLW\")",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
