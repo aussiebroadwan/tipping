@@ -112,3 +112,35 @@ func (s *APIDataService) GetCompetitionFixtures(competitionId int64) ([]models.A
 
 	return apiFixtures, nil
 }
+
+// GetFixtureDetails fetches details for a specific fixture and converts them to API models.
+func (s *APIDataService) GetFixtureDetails(fixtureId int64) (*models.APIFixture, error) {
+	fixture, err := s.queries.GetMatchDetailsByFixtureID(s.ctx, fixtureId)
+	if err != nil {
+		return nil, err
+	}
+
+	apiFixture := models.APIFixture{
+		ID:            fixture.Fixture.ID,
+		CompetitionID: fixture.Fixture.CompetitionID,
+		RoundTitle:    fixture.Fixture.Roundtitle,
+		MatchState:    fixture.Fixture.Matchstate,
+		Venue:         fixture.Fixture.Venue,
+		VenueCity:     fixture.Fixture.Venuecity,
+		HomeTeam: models.APITeam{
+			Nickname: fixture.Team.Nickname,
+			Score:    fixture.MatchDetail.HometeamScore,
+			Odds:     fixture.MatchDetail.HometeamOdds,
+			Form:     fixture.MatchDetail.HometeamForm,
+		},
+		AwayTeam: models.APITeam{
+			Nickname: fixture.Team_2.Nickname,
+			Score:    fixture.MatchDetail.AwayteamScore,
+			Odds:     fixture.MatchDetail.AwayteamOdds,
+			Form:     fixture.MatchDetail.AwayteamForm,
+		},
+		KickOffTime: fixture.Fixture.Kickofftime.Time,
+	}
+
+	return &apiFixture, nil
+}

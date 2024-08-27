@@ -29,9 +29,7 @@ func RegisterRoutes(mux *http.ServeMux, dataService *services.APIDataService) *H
 	mux.HandleFunc("/api/v1/competitions", handlers.GetCompetitions)
 	mux.HandleFunc("/api/v1/fixtures", handlers.GetFixtures)
 	mux.HandleFunc("/api/v1/fixtures/{competition_id}", handlers.GetCompetitionFixtures)
-	// mux.HandleFunc("/api/v1/fixtures/{competition_id}/{match_id}", handlers.GetMatchDetails)
-	// mux.HandleFunc("/api/v1/teams", handlers.GetTeams)
-	// mux.HandleFunc("/api/v1/teams/{team_id}", handlers.GetTeamByID)
+	mux.HandleFunc("/api/v1/fixtures/{competition_id}/{match_id}", handlers.GetMatchDetails)
 
 	return handlers
 }
@@ -77,7 +75,7 @@ func (h *Handlers) GetFixtures(w http.ResponseWriter, r *http.Request) {
 // @Description Get fixtures by competition ID
 // @Tags fixtures
 // @Produce json
-// @Param competition_id path int true "Competition ID"
+// @Param competition_id path int true "Competition ID" example(111)
 // @Success 200 {array} models.APIFixture
 // @Failure 400 "Invalid competition_id"
 // @Router /api/v1/fixtures/{competition_id} [get]
@@ -110,4 +108,69 @@ func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(fixtures)
+}
+
+// GetMatchDetails retrieves details for a specific match in a competition.
+//
+// @Summary Retrieve match details
+// @Description Get detailed information for a specific match within a competition.
+// @Tags fixtures
+// @Produce json
+// @Param competition_id query int true "Competition ID" example(111)
+// @Param match_id query int true "Match ID" example(20241610510)
+// @Success 200 {object} models.APIFixture
+// @Failure 400 "Invalid competition_id or match_id, or Fixture does not belong to the specified competition"
+// @Failure 500 "Internal server error"
+// @Router /api/v1/fixtures/{competition_id}/{match_id} [get]
+func (h *Handlers) GetMatchDetails(w http.ResponseWriter, r *http.Request) {
+	// Retrieve query parameters
+	competitionId := r.URL.Query().Get("competition_id")
+	matchId := r.URL.Query().Get("match_id")
+
+	// Check for missing parameters
+	if competitionId == "" {
+		http.Error(w, "Missing competition_id query parameter", http.StatusBadRequest)
+		return
+	}
+	if matchId == "" {
+		http.Error(w, "Missing match_id query parameter", http.StatusBadRequest)
+		return
+	}
+
+	// Convert the competition ID to an integer
+	competitionID, err := strconv.Atoi(competitionId)
+	if err != nil {
+		http.Error(w, "Invalid competition_id query parameter", http.StatusBadRequest)
+		return
+	}
+
+	// Convert the match ID to an integer
+	matchID, err := strconv.Atoi(matchId)
+	if err != nil {
+		http.Error(w, "Invalid match_id query parameter", http.StatusBadRequest)
+		return
+	}
+
+	// Validate the competition ID
+	validCompetitions := []int{config.CompetitionNRL, config.CompetitionNRLW, config.CompetitionStateOfOrigin, config.CompetitionStateOfOriginWomens}
+	if !slices.Contains(validCompetitions, competitionID) {
+		http.Error(w, "Invalid competition_id", http.StatusBadRequest)
+		return
+	}
+
+	// Fetch the fixture details from the database
+	fixture, err := h.dataService.GetFixtureDetails(int64(matchID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Ensure the fixture belongs to the specified competition
+	if fixture.CompetitionID != int64(competitionID) {
+		http.Error(w, "Fixture does not belong to the specified competition", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(fixture)
 }
