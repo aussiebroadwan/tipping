@@ -13,5 +13,6 @@ jobs:
           
       # Run the tests
       - run: |
+          echo "Running backend tests"
           cd backend
-          go test ./...
+          go test -v ./tests/...
