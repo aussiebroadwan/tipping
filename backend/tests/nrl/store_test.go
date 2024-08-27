@@ -79,8 +79,8 @@ func TestStoreAndFetchNRLRound22Season2024(t *testing.T) {
 	assert.Equal(t, expected.VenueCity, storedFixture.Venuecity)
 	assert.Equal(t, expected.MatchCentreURL, storedFixture.Matchcentreurl)
 
-	assert.Equal(t, *parseScore(expected.HomeTeam.Score), *storedMatchDetails.HometeamScore)
-	assert.Equal(t, *parseScore(expected.AwayTeam.Score), *storedMatchDetails.AwayteamScore)
+	assert.Equal(t, *parseScore(expected.HomeTeam.Score), *storedMatchDetails.MatchDetail.HometeamScore)
+	assert.Equal(t, *parseScore(expected.AwayTeam.Score), *storedMatchDetails.MatchDetail.AwayteamScore)
 
 	assert.Equal(t, expected.KickOffTime, storedFixture.Kickofftime.Time.Format("2006-01-02T15:04:05Z"))
 }
@@ -154,8 +154,8 @@ func TestStoreAndFetchNRLWRound5Season2024(t *testing.T) {
 	assert.Equal(t, expected.VenueCity, storedFixture.Venuecity)
 	assert.Equal(t, expected.MatchCentreURL, storedFixture.Matchcentreurl)
 
-	assert.Equal(t, *parseScore(expected.HomeTeam.Score), *storedMatchDetails.HometeamScore)
-	assert.Equal(t, *parseScore(expected.AwayTeam.Score), *storedMatchDetails.AwayteamScore)
+	assert.Equal(t, *parseScore(expected.HomeTeam.Score), *storedMatchDetails.MatchDetail.HometeamScore)
+	assert.Equal(t, *parseScore(expected.AwayTeam.Score), *storedMatchDetails.MatchDetail.AwayteamScore)
 
 	assert.Equal(t, expected.KickOffTime, storedFixture.Kickofftime.Time.Format("2006-01-02T15:04:05Z"))
 }

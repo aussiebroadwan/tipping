@@ -91,8 +91,8 @@ func TestGetMatchDetailsByFixtureID(t *testing.T) {
 		t.Fatalf("Failed to get match details by fixture ID: %v", err)
 	}
 
-	if matchDetail.FixtureID != fixtureID {
-		t.Fatalf("Expected fixture ID %d, got %d", fixtureID, matchDetail.FixtureID)
+	if matchDetail.Fixture.ID != fixtureID {
+		t.Fatalf("Expected fixture ID %d, got %d", fixtureID, matchDetail.Fixture.ID)
 	}
 }
 

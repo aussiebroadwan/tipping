@@ -24,7 +24,7 @@ services:
       DB_NAME: nrl_tipping
       NRL_API_BASE_URL: https://www.nrl.com
     ports:
-      - "8000:8000"
+      - "8080:8080"
     depends_on:
       - db
 

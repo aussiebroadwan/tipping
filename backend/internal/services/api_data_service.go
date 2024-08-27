@@ -40,3 +40,75 @@ func (s *APIDataService) GetCompetitions() ([]models.APICompetition, error) {
 
 	return comps, nil
 }
+
+// GetFixtures fetches all fixtures with match details from the database and converts them to API models.
+func (s *APIDataService) GetFixtures() ([]models.APIFixture, error) {
+	fixtures, err := s.queries.ListMatchDetails(s.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert database models to API models.
+	apiFixtures := make([]models.APIFixture, 0)
+	for _, f := range fixtures {
+		apiFixtures = append(apiFixtures, models.APIFixture{
+			ID:            f.Fixture.ID,
+			CompetitionID: f.Fixture.CompetitionID,
+			RoundTitle:    f.Fixture.Roundtitle,
+			MatchState:    f.Fixture.Matchstate,
+			Venue:         f.Fixture.Venue,
+			VenueCity:     f.Fixture.Venuecity,
+			HomeTeam: models.APITeam{
+				Nickname: f.Team.Nickname,
+				Score:    f.MatchDetail.HometeamScore,
+				Odds:     f.MatchDetail.HometeamOdds,
+				Form:     f.MatchDetail.HometeamForm,
+			},
+			AwayTeam: models.APITeam{
+				Nickname: f.Team_2.Nickname,
+				Score:    f.MatchDetail.AwayteamScore,
+				Odds:     f.MatchDetail.AwayteamOdds,
+				Form:     f.MatchDetail.AwayteamForm,
+			},
+			KickOffTime: f.Fixture.Kickofftime.Time,
+		})
+	}
+
+	return apiFixtures, nil
+}
+
+// GetCompetitionFixtures fetches fixtures for a specific competition and converts them to API models.
+func (s *APIDataService) GetCompetitionFixtures(competitionId int64) ([]models.APIFixture, error) {
+	fixtures, err := s.queries.ListMatchDetailsByCompetitionID(s.ctx, competitionId)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert database models to API models.
+	apiFixtures := make([]models.APIFixture, 0)
+	for _, f := range fixtures {
+		apiFixtures = append(apiFixtures, models.APIFixture{
+			ID:            f.Fixture.ID,
+			CompetitionID: f.Fixture.CompetitionID,
+			RoundTitle:    f.Fixture.Roundtitle,
+			MatchState:    f.Fixture.Matchstate,
+			Venue:         f.Fixture.Venue,
+			VenueCity:     f.Fixture.Venuecity,
+			HomeTeam: models.APITeam{
+				Nickname: f.Team.Nickname,
+				Score:    f.MatchDetail.HometeamScore,
+				Odds:     f.MatchDetail.HometeamOdds,
+				Form:     f.MatchDetail.HometeamForm,
+			},
+			AwayTeam: models.APITeam{
+				Nickname: f.Team_2.Nickname,
+				Score:    f.MatchDetail.AwayteamScore,
+				Odds:     f.MatchDetail.AwayteamOdds,
+				Form:     f.MatchDetail.AwayteamForm,
+			},
+			KickOffTime: f.Fixture.Kickofftime.Time,
+		})
+	}
+
+	return apiFixtures, nil
+}

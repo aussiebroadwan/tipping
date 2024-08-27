@@ -118,7 +118,8 @@ func (s *NRLDataService) createOrUpdateFixture(fixtureID int64, compID int, fixt
 	pgxKickOffTime := pgtype.Timestamp{Time: kickOffTime, Valid: true}
 
 	// Check if fixture exists
-	if _, err := s.queries.GetFixtureByID(s.ctx, fixtureID); err == nil {
+	checkFixture, _ := s.queries.GetFixtureByID(s.ctx, fixtureID)
+	if checkFixture.ID == fixtureID {
 		// Update fixture
 		_, err := s.queries.UpdateFixture(s.ctx, db.UpdateFixtureParams{
 			ID:         fixtureID,
@@ -170,8 +171,8 @@ func (s *NRLDataService) storeTeam(team models.NRLTeam, competitionId int) error
 // storeMatchDetails converts and stores match details in the database.
 func (s *NRLDataService) storeMatchDetails(fixtureID int64, fixture models.NRLFixture) error {
 	// Check if match details exist
-	_, err := s.queries.GetMatchDetailsByFixtureID(s.ctx, fixtureID)
-	if err == nil {
+	checkFixture, _ := s.queries.GetMatchDetailsByFixtureID(s.ctx, fixtureID)
+	if checkFixture.MatchDetail.FixtureID == fixtureID {
 		// Match details already exist Update them
 		_, err := s.queries.UpdateMatchDetail(s.ctx, db.UpdateMatchDetailParams{
 			FixtureID:     fixtureID,
@@ -187,7 +188,7 @@ func (s *NRLDataService) storeMatchDetails(fixtureID int64, fixture models.NRLFi
 		return nil
 	}
 
-	_, err = s.queries.CreateMatchDetail(s.ctx, db.CreateMatchDetailParams{
+	_, err := s.queries.CreateMatchDetail(s.ctx, db.CreateMatchDetailParams{
 		FixtureID:     fixtureID,
 		HometeamID:    int64(fixture.HomeTeam.ID),
 		AwayteamID:    int64(fixture.AwayTeam.ID),
@@ -199,7 +200,7 @@ func (s *NRLDataService) storeMatchDetails(fixtureID int64, fixture models.NRLFi
 		AwayteamForm:  parseForm(fixture.AwayTeam.Form),
 		WinnerTeamid:  parseWinnerTeamID(fixture),
 	})
-	if err != nil {
+	if err != nil && err.Error() != "no rows in result set" {
 		return fmt.Errorf("failed to store match details: %w", err)
 	}
 	return nil
