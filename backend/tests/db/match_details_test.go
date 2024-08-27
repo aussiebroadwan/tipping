@@ -14,8 +14,9 @@ func TestCreateMatchDetail(t *testing.T) {
 	odd2 := float64(2.49)
 
 	homeTeam := db.CreateTeamParams{
-		TeamID:   500001,
-		Nickname: "homeTeam",
+		ID:            500001,
+		Nickname:      "homeTeam",
+		CompetitionID: 111,
 	}
 
 	_, err := testQueries.CreateTeam(ctx, homeTeam)
@@ -24,8 +25,9 @@ func TestCreateMatchDetail(t *testing.T) {
 	}
 
 	awayTeam := db.CreateTeamParams{
-		TeamID:   500002,
-		Nickname: "awayTeam",
+		ID:            500002,
+		Nickname:      "awayTeam",
+		CompetitionID: 111,
 	}
 
 	_, err = testQueries.CreateTeam(ctx, awayTeam)
@@ -91,8 +93,8 @@ func TestGetMatchDetailsByFixtureID(t *testing.T) {
 		t.Fatalf("Failed to get match details by fixture ID: %v", err)
 	}
 
-	if matchDetail.FixtureID != fixtureID {
-		t.Fatalf("Expected fixture ID %d, got %d", fixtureID, matchDetail.FixtureID)
+	if matchDetail.Fixture.ID != fixtureID {
+		t.Fatalf("Expected fixture ID %d, got %d", fixtureID, matchDetail.Fixture.ID)
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/aussiebroadwan/tipping/backend/config"
 	"github.com/aussiebroadwan/tipping/backend/internal/db"
 	"github.com/aussiebroadwan/tipping/backend/internal/models"
+	"github.com/aussiebroadwan/tipping/backend/internal/utils"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -35,7 +36,7 @@ func (s *NRLDataService) StoreFixtureAndDetails(fixture models.NRLFixture) error
 	}
 
 	// Parse match ID components
-	_, compID, _, _ := parseMatchID(fixture.ID)
+	_, compID, _, _ := utils.ParseMatchID(fixture.ID)
 
 	// Parse kickoff time
 	kickOffTime, err := time.Parse(time.RFC3339, fixture.KickOffTime)
@@ -118,7 +119,8 @@ func (s *NRLDataService) createOrUpdateFixture(fixtureID int64, compID int, fixt
 	pgxKickOffTime := pgtype.Timestamp{Time: kickOffTime, Valid: true}
 
 	// Check if fixture exists
-	if _, err := s.queries.GetFixtureByID(s.ctx, fixtureID); err == nil {
+	checkFixture, _ := s.queries.GetFixtureByID(s.ctx, fixtureID)
+	if checkFixture.ID == fixtureID {
 		// Update fixture
 		_, err := s.queries.UpdateFixture(s.ctx, db.UpdateFixtureParams{
 			ID:         fixtureID,
@@ -150,28 +152,29 @@ func (s *NRLDataService) createOrUpdateFixture(fixtureID int64, compID int, fixt
 // storeTeam stores a team in the database, creating it if it does not exist.
 func (s *NRLDataService) storeTeam(team models.NRLTeam, competitionId int) error {
 	// Check if team exists
-	_, err := s.queries.GetTeamByID(s.ctx, int64(team.ID))
-	if err == nil {
+	checkTeam, _ := s.queries.GetTeamByID(s.ctx, int64(team.ID))
+	if checkTeam.ID == int64(team.ID) {
 		return nil
 	}
 
 	// Create team
-	_, err = s.queries.CreateTeam(s.ctx, db.CreateTeamParams{
-		TeamID:        int64(team.ID),
+	_, err := s.queries.CreateTeam(s.ctx, db.CreateTeamParams{
+		ID:            int64(team.ID),
 		Nickname:      team.Name,
 		CompetitionID: int64(competitionId),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to store team: %w", err)
 	}
+
 	return nil
 }
 
 // storeMatchDetails converts and stores match details in the database.
 func (s *NRLDataService) storeMatchDetails(fixtureID int64, fixture models.NRLFixture) error {
 	// Check if match details exist
-	_, err := s.queries.GetMatchDetailsByFixtureID(s.ctx, fixtureID)
-	if err == nil {
+	checkFixture, _ := s.queries.GetMatchDetailsByFixtureID(s.ctx, fixtureID)
+	if checkFixture.MatchDetail.FixtureID == fixtureID {
 		// Match details already exist Update them
 		_, err := s.queries.UpdateMatchDetail(s.ctx, db.UpdateMatchDetailParams{
 			FixtureID:     fixtureID,
@@ -187,7 +190,7 @@ func (s *NRLDataService) storeMatchDetails(fixtureID int64, fixture models.NRLFi
 		return nil
 	}
 
-	_, err = s.queries.CreateMatchDetail(s.ctx, db.CreateMatchDetailParams{
+	_, err := s.queries.CreateMatchDetail(s.ctx, db.CreateMatchDetailParams{
 		FixtureID:     fixtureID,
 		HometeamID:    int64(fixture.HomeTeam.ID),
 		AwayteamID:    int64(fixture.AwayTeam.ID),
@@ -199,9 +202,10 @@ func (s *NRLDataService) storeMatchDetails(fixtureID int64, fixture models.NRLFi
 		AwayteamForm:  parseForm(fixture.AwayTeam.Form),
 		WinnerTeamid:  parseWinnerTeamID(fixture),
 	})
-	if err != nil {
+	if err != nil && err.Error() != "no rows in result set" {
 		return fmt.Errorf("failed to store match details: %w", err)
 	}
+
 	return nil
 }
 
@@ -254,13 +258,4 @@ func parseWinnerTeamID(fixture models.NRLFixture) *int64 {
 		}
 	}
 	return nil
-}
-
-func parseMatchID(id string) (season, competition, round, game int) {
-	season, _ = strconv.Atoi(id[0:4])
-	competition, _ = strconv.Atoi(id[4:7])
-	round, _ = strconv.Atoi(id[7:9])
-	game, _ = strconv.Atoi(string(id[9]))
-
-	return
 }

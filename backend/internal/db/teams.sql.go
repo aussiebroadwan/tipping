@@ -10,13 +10,13 @@ import (
 )
 
 const createTeam = `-- name: CreateTeam :one
-INSERT INTO teams (team_id, nickName, competition_id) 
+INSERT INTO teams (id, nickName, competition_id) 
 VALUES ($1, $2, $3)
-RETURNING team_id, nickname, competition_id
+RETURNING id, nickname, competition_id
 `
 
 type CreateTeamParams struct {
-	TeamID        int64
+	ID            int64
 	Nickname      string
 	CompetitionID int64
 }
@@ -24,26 +24,26 @@ type CreateTeamParams struct {
 // Insert a new team into the teams table.
 // If a team with the same team_id already exists, do nothing.
 func (q *Queries) CreateTeam(ctx context.Context, arg CreateTeamParams) (*Team, error) {
-	row := q.db.QueryRow(ctx, createTeam, arg.TeamID, arg.Nickname, arg.CompetitionID)
+	row := q.db.QueryRow(ctx, createTeam, arg.ID, arg.Nickname, arg.CompetitionID)
 	var i Team
-	err := row.Scan(&i.TeamID, &i.Nickname, &i.CompetitionID)
+	err := row.Scan(&i.ID, &i.Nickname, &i.CompetitionID)
 	return &i, err
 }
 
 const getTeamByID = `-- name: GetTeamByID :one
-SELECT team_id, nickname, competition_id FROM teams WHERE team_id = $1
+SELECT id, nickname, competition_id FROM teams WHERE id = $1
 `
 
 // Retrieve a specific team by its unique identifier.
-func (q *Queries) GetTeamByID(ctx context.Context, teamID int64) (*Team, error) {
-	row := q.db.QueryRow(ctx, getTeamByID, teamID)
+func (q *Queries) GetTeamByID(ctx context.Context, id int64) (*Team, error) {
+	row := q.db.QueryRow(ctx, getTeamByID, id)
 	var i Team
-	err := row.Scan(&i.TeamID, &i.Nickname, &i.CompetitionID)
+	err := row.Scan(&i.ID, &i.Nickname, &i.CompetitionID)
 	return &i, err
 }
 
 const listTeams = `-- name: ListTeams :many
-SELECT team_id, nickname, competition_id FROM teams
+SELECT id, nickname, competition_id FROM teams
 `
 
 // Retrieve all teams available in the system.
@@ -56,7 +56,7 @@ func (q *Queries) ListTeams(ctx context.Context) ([]*Team, error) {
 	var items []*Team
 	for rows.Next() {
 		var i Team
-		if err := rows.Scan(&i.TeamID, &i.Nickname, &i.CompetitionID); err != nil {
+		if err := rows.Scan(&i.ID, &i.Nickname, &i.CompetitionID); err != nil {
 			return nil, err
 		}
 		items = append(items, &i)

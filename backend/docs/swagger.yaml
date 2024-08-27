@@ -1,0 +1,32 @@
+definitions:
+  models.APICompetition:
+    properties:
+      id:
+        description: Unique identifier for the competition
+        type: integer
+      name:
+        description: Name of the competition (e.g., "NRL", "NRLW")
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is the API for the Tipping Application to interact with NRL data.
+  title: Tipping API
+  version: "1.0"
+paths:
+  /api/v1/competitions:
+    get:
+      description: Get all competitions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.APICompetition'
+            type: array
+      summary: Retrieve a list of all available competitions
+      tags:
+      - competitions
+swagger: "2.0"

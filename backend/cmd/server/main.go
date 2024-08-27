@@ -5,17 +5,27 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 
 	"github.com/aussiebroadwan/tipping/backend/config"
 	"github.com/aussiebroadwan/tipping/backend/internal/db"
+	"github.com/aussiebroadwan/tipping/backend/internal/handlers"
 	"github.com/aussiebroadwan/tipping/backend/internal/services"
+
+	_ "github.com/aussiebroadwan/tipping/backend/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/jackc/pgx/v5"
 )
 
-var lg *slog.Logger
+var (
+	lg *slog.Logger
+
+	apiBase    string
+	nrlApiBase string
+)
 
 func init() {
 	// Create logger
@@ -42,7 +52,12 @@ func init() {
 		os.Exit(1)
 	}
 
-	if os.Getenv("NRL_API_BASE_URL") == "" {
+	if apiBase = os.Getenv("API_BASE_URL"); apiBase == "" {
+		lg.Warn("API_BASE_URL environment variable is not given, defaulting to http://localhost:8080")
+		apiBase = "http://localhost:8080"
+	}
+
+	if nrlApiBase = os.Getenv("NRL_API_BASE_URL"); nrlApiBase == "" {
 		lg.Error("NRL_API_BASE_URL environment variable is required")
 		os.Exit(1)
 	}
@@ -65,6 +80,9 @@ func connect(ctx context.Context) (*pgx.Conn, error) {
 	return conn, nil
 }
 
+// @title Tipping API
+// @version 1.0
+// @description This is the API for the Tipping Application to interact with NRL data.
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -80,7 +98,16 @@ func main() {
 
 	// Initialize services
 	nrlService := services.NewNRLService(os.Getenv("NRL_API_BASE_URL"))
-	dataService := services.NewNRLDataService(queries, ctx)
+	nrlDataService := services.NewNRLDataService(queries, ctx)
+	apiDataService := services.NewAPIDataService(queries, ctx)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", GetHealth)
+	mux.HandleFunc("GET /swagger/", httpSwagger.Handler(
+		httpSwagger.URL(apiBase+"/swagger/doc.json"),
+	))
+	handlers.RegisterRoutes(mux, apiDataService)
+	go http.ListenAndServe(":8080", mux)
 
 	// Define the competition IDs you want to fetch data for
 	competitionIDs := []int64{
@@ -91,7 +118,7 @@ func main() {
 	}
 
 	// Initialize and start the scheduled service
-	scheduledService := services.NewNRLScheduledService(nrlService, dataService, competitionIDs)
+	scheduledService := services.NewNRLScheduledService(nrlService, nrlDataService, competitionIDs)
 	go scheduledService.Start(ctx)
 
 	// Signal handler for graceful shutdown
@@ -105,4 +132,9 @@ func main() {
 	// Block until context is done
 	<-ctx.Done()
 	log.Println("Shutting down...")
+}
+
+func GetHealth(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
 }

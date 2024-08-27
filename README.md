@@ -76,6 +76,55 @@ sqlc generate
 
 This command will generate new Go functions based on your SQL queries in the `backend/internal/db` directory. Make sure to run `sqlc generate` every time you modify the `.sql` files.
 
+## API Endpoints
+
+The NRL Tipping Application backend provides several API endpoints for interacting with competitions, fixtures, and match details.
+
+- **Get Competitions**
+    - **URL**: `GET /api/v1/competitions`
+    - **Description**: Retrieves a list of all available competitions.
+    - **Response**: JSON array of competitions.
+
+- **Get All Fixtures**
+    - **URL**: `GET /api/v1/fixtures`
+    - **Description**: Retrieves a list of all fixtures.
+    - **Response**: JSON array of fixtures.
+
+- **Get Fixtures by Competition ID**
+    - **URL**: `GET /api/v1/fixtures/{competition_id}`
+    - **Description**: Retrieves fixtures for a specific competition.
+    - **Parameters**:
+        - `competition_id` *(required)*: The ID of the competition.
+    - **Response**: JSON array of fixtures for the specified competition.
+
+- **Get Match Details**
+    - **URL**: `GET /api/v1/fixtures/{competition_id}/{match_id}`
+    - **Description**: Retrieves details for a specific match within a competition.
+    - **Parameters**:
+        - `competition_id` *(required)*: The ID of the competition.
+        - `match_id` *(required)*: The ID of the match.
+    - **Response**: JSON object with match details.
+
+Here are some example commands using curl to interact with the API.
+
+```bash
+# Get Competitions
+curl -X GET http://localhost:8080/api/v1/competitions
+
+# Get All Fixtures
+curl -X GET http://localhost:8080/api/v1/fixtures
+
+# Get Fixtures by Competition ID
+#   - 111 NRL
+#   - 161 NRLW
+#   - 116 State of Origin
+#   - 156 Womens State of Origin 
+curl -X GET "http://localhost:8080/api/v1/fixtures/111"
+
+# Get Match Details
+curl -X GET "http://localhost:8080/api/v1/fixtures/111/20241112610"
+```
+
 ## Contributing
 
 To contribute to this project, please fork the repository and create a pull request with your changes. Ensure that all new code follows the project’s coding standards and is well-documented.
