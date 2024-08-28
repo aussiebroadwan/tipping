@@ -50,6 +50,18 @@ func (s *NRLDataService) StoreFixtureAndDetails(fixture models.NRLFixture) error
 		return err
 	}
 
+	// Update Competition with current round
+	if fixture.IsCurrentRound {
+		// Update Competition with current round
+		_, err = s.queries.UpdateCompetitionRound(s.ctx, db.UpdateCompetitionRoundParams{
+			ID:    int64(compID),
+			Round: &fixture.RoundTitle,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to update competition round: %w", err)
+		}
+	}
+
 	// Store each team
 	if err := s.storeTeam(fixture.HomeTeam, compID); err != nil {
 		return fmt.Errorf("failed to store home team: %w", err)

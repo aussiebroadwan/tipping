@@ -3,10 +3,70 @@ definitions:
     properties:
       id:
         description: Unique identifier for the competition
+        example: 111
         type: integer
       name:
-        description: Name of the competition (e.g., "NRL", "NRLW")
+        description: Name of the competition
+        example: NRL
         type: string
+    type: object
+  models.APIFixture:
+    properties:
+      away_team:
+        allOf:
+        - $ref: '#/definitions/models.APITeam'
+        description: Away team details
+      competition_id:
+        description: The competition ID this fixture belongs to
+        example: 111
+        type: integer
+      home_team:
+        allOf:
+        - $ref: '#/definitions/models.APITeam'
+        description: Home team details
+      id:
+        description: Unique identifier for the fixture
+        example: 20241610510
+        type: integer
+      kick_off_time:
+        description: Kickoff time of the match in RFC3339 format
+        example: "2024-08-24T01:00:00Z"
+        type: string
+      match_state:
+        description: Current state of the match
+        example: FullTime
+        type: string
+      round_title:
+        description: The title of the round
+        example: Round 22
+        type: string
+      venue:
+        description: Venue of the match
+        example: Leichhardt Oval
+        type: string
+      venue_city:
+        description: City where the venue is located
+        example: Sydney
+        type: string
+    type: object
+  models.APITeam:
+    properties:
+      form:
+        description: Recent form of the team
+        example: WLWWL
+        type: string
+      nickname:
+        description: Nickname of the team
+        example: Cowboys
+        type: string
+      odds:
+        description: Odds for the team to win
+        example: 3.42
+        type: number
+      score:
+        description: Final score of the team
+        example: 40
+        type: integer
     type: object
 info:
   contact: {}
@@ -29,4 +89,79 @@ paths:
       summary: Retrieve a list of all available competitions
       tags:
       - competitions
+  /api/v1/fixtures:
+    get:
+      description: Get all fixtures
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.APIFixture'
+            type: array
+      summary: Retrieve a list of all fixtures
+      tags:
+      - fixtures
+  /api/v1/fixtures/{competition_id}:
+    get:
+      description: Get fixtures by competition ID
+      parameters:
+      - description: Competition ID
+        example: 111
+        in: path
+        name: competition_id
+        required: true
+        type: integer
+      - description: Round number
+        example: 1
+        in: query
+        name: round
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.APIFixture'
+            type: array
+        "400":
+          description: Invalid competition_id
+      summary: Retrieve fixtures for a specific competition
+      tags:
+      - fixtures
+  /api/v1/fixtures/{competition_id}/{match_id}:
+    get:
+      description: Get detailed information for a specific match within a competition.
+      parameters:
+      - description: Competition ID
+        example: 111
+        in: path
+        name: competition_id
+        required: true
+        type: integer
+      - description: Match ID
+        example: 20241610510
+        in: path
+        name: match_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIFixture'
+        "400":
+          description: Invalid competition_id or match_id, or Fixture does not belong
+            to the specified competition
+        "500":
+          description: Internal server error
+      summary: Retrieve match details
+      tags:
+      - fixtures
 swagger: "2.0"

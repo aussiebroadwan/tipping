@@ -2,6 +2,7 @@ package models
 
 type NRLFixture struct {
 	ID             string  `json:"matchId"`
+	IsCurrentRound bool    `json:"isCurrentRound"`
 	RoundTitle     string  `json:"roundTitle"`
 	MatchState     string  `json:"matchState"`
 	Venue          string  `json:"venue"`
