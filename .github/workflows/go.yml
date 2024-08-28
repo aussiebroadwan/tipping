@@ -16,3 +16,8 @@ jobs:
           echo "Running backend tests"
           cd backend
           go test -v ./tests/...
+      
+      # Cleanup
+      - run: |
+          echo "Docker Cleanup"
+          docker system prune -f
