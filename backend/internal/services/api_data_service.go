@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aussiebroadwan/tipping/backend/config"
 	"github.com/aussiebroadwan/tipping/backend/internal/db"
 	"github.com/aussiebroadwan/tipping/backend/internal/models"
 )
@@ -152,9 +153,14 @@ func (s *APIDataService) GetCompetitionFixtures(competitionId int64) ([]models.A
 
 // GetCompetitionFixtures fetches fixtures for a specific competition and converts them to API models.
 func (s *APIDataService) GetRoundCompetitionFixtures(competitionId int64, round int) ([]models.APIFixture, error) {
+	roundTitle := fmt.Sprintf("Round %d", round)
+	if competitionId == config.CompetitionStateOfOrigin || competitionId == config.CompetitionStateOfOriginWomens {
+		roundTitle = fmt.Sprintf("Game %d", round)
+	}
+
 	fixtures, err := s.queries.ListRoundMatchDetailsByCompetitionID(s.ctx, db.ListRoundMatchDetailsByCompetitionIDParams{
 		CompetitionID: competitionId,
-		Roundtitle:    fmt.Sprintf("Round %d", round),
+		Roundtitle:    roundTitle,
 	})
 	if err != nil {
 		return nil, err

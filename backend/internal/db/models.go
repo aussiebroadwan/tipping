@@ -13,6 +13,8 @@ type Competition struct {
 	ID int64
 	// Name of the competition (e.g., NRL, NRLW)
 	Name string
+	// Indicates the current round or game for the competition (e.g., Round 1 for NRL, Game 1 for State of Origin)
+	Round *string
 }
 
 type Fixture struct {

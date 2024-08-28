@@ -19,3 +19,13 @@ SELECT * FROM competitions WHERE id = $1;
 --
 -- However, if future updates to this table are needed (e.g., new competitions),
 -- you may add additional commands to handle such changes.
+
+
+-- name: UpdateCompetitionRound :one
+-- Update the current round for a competition.
+-- This query updates the round field for a specific competition based on the
+-- provided competition ID.
+UPDATE competitions
+SET round = $2
+WHERE id = $1
+RETURNING *;

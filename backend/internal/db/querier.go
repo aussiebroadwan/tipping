@@ -55,6 +55,19 @@ type Querier interface {
 	ListRoundMatchDetailsByCompetitionID(ctx context.Context, arg ListRoundMatchDetailsByCompetitionIDParams) ([]*ListRoundMatchDetailsByCompetitionIDRow, error)
 	// Retrieve all teams available in the system.
 	ListTeams(ctx context.Context) ([]*Team, error)
+	// The following commands for creating, updating, and deleting competitions
+	// are not required since this is a static table with fixed records:
+	// - NRL (111)
+	// - NRLW (161)
+	// - State of Origin (116)
+	// - State of Origin Womens (156)
+	//
+	// However, if future updates to this table are needed (e.g., new competitions),
+	// you may add additional commands to handle such changes.
+	// Update the current round for a competition.
+	// This query updates the round field for a specific competition based on the
+	// provided competition ID.
+	UpdateCompetitionRound(ctx context.Context, arg UpdateCompetitionRoundParams) (*Competition, error)
 	// Conditionally update fixture details based on provided arguments.
 	// This query updates the fields of a fixture record where the provided arguments
 	// are not NULL. It uses the COALESCE function to retain the existing value if

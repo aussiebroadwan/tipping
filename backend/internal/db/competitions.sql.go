@@ -10,20 +10,20 @@ import (
 )
 
 const getCompetitionByID = `-- name: GetCompetitionByID :one
-SELECT id, name FROM competitions WHERE id = $1
+SELECT id, name, round FROM competitions WHERE id = $1
 `
 
 // Retrieve a specific competition by its unique identifier.
 func (q *Queries) GetCompetitionByID(ctx context.Context, id int64) (*Competition, error) {
 	row := q.db.QueryRow(ctx, getCompetitionByID, id)
 	var i Competition
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.Round)
 	return &i, err
 }
 
 const listCompetitions = `-- name: ListCompetitions :many
 
-SELECT id, name FROM competitions
+SELECT id, name, round FROM competitions
 `
 
 // The competitions table is a static table that stores information about the
@@ -39,7 +39,7 @@ func (q *Queries) ListCompetitions(ctx context.Context) ([]*Competition, error) 
 	var items []*Competition
 	for rows.Next() {
 		var i Competition
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(&i.ID, &i.Name, &i.Round); err != nil {
 			return nil, err
 		}
 		items = append(items, &i)
@@ -48,4 +48,37 @@ func (q *Queries) ListCompetitions(ctx context.Context) ([]*Competition, error) 
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateCompetitionRound = `-- name: UpdateCompetitionRound :one
+
+
+UPDATE competitions
+SET round = $2
+WHERE id = $1
+RETURNING id, name, round
+`
+
+type UpdateCompetitionRoundParams struct {
+	ID    int64
+	Round *string
+}
+
+// The following commands for creating, updating, and deleting competitions
+// are not required since this is a static table with fixed records:
+// - NRL (111)
+// - NRLW (161)
+// - State of Origin (116)
+// - State of Origin Womens (156)
+//
+// However, if future updates to this table are needed (e.g., new competitions),
+// you may add additional commands to handle such changes.
+// Update the current round for a competition.
+// This query updates the round field for a specific competition based on the
+// provided competition ID.
+func (q *Queries) UpdateCompetitionRound(ctx context.Context, arg UpdateCompetitionRoundParams) (*Competition, error) {
+	row := q.db.QueryRow(ctx, updateCompetitionRound, arg.ID, arg.Round)
+	var i Competition
+	err := row.Scan(&i.ID, &i.Name, &i.Round)
+	return &i, err
 }
