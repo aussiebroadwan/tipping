@@ -55,6 +55,21 @@ func TestGetCompetitionFixturesAPI(t *testing.T) {
 	assert.Equal(t, 2, len(fixtures))
 }
 
+func TestGetCompetitionRoundFixturesAPI(t *testing.T) {
+	req, err := http.NewRequest("GET", "/api/v1/fixtures/111?round=26", nil)
+	assert.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	handlerRouter.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var fixtures []models.APIFixture
+	err = json.Unmarshal(rr.Body.Bytes(), &fixtures)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(fixtures))
+}
+
 func TestGetMatchDetailsAPI(t *testing.T) {
 	req, err := http.NewRequest("GET", "/api/v1/fixtures/111/20241112610", nil)
 	assert.NoError(t, err)

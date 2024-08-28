@@ -107,7 +107,7 @@ func addBulldogsVsSeaEaglesUpcomingFixture() error {
 
 	fixture := models.NRLFixture{
 		ID:             "20241112620",
-		RoundTitle:     "Round 26",
+		RoundTitle:     "Round 27",
 		MatchState:     "Upcoming",
 		KickOffTime:    "2024-08-30T08:00:00Z",
 		Venue:          "Accor Stadium",
