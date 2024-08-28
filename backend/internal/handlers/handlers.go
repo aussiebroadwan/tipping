@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/aussiebroadwan/tipping/backend/config"
+	"github.com/aussiebroadwan/tipping/backend/internal/models"
 	"github.com/aussiebroadwan/tipping/backend/internal/services"
 	"github.com/aussiebroadwan/tipping/backend/internal/utils"
 )
@@ -58,13 +59,33 @@ func (h *Handlers) GetCompetitions(w http.ResponseWriter, r *http.Request) {
 // @Description Get all fixtures
 // @Tags fixtures
 // @Produce json
+// @Param round query int false "Round number" example(1)
 // @Success 200 {array} models.APIFixture
 // @Router /api/v1/fixtures [get]
 func (h *Handlers) GetFixtures(w http.ResponseWriter, r *http.Request) {
-	fixtures, err := h.dataService.GetFixtures()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	var fixtures []models.APIFixture
+	var err error
+
+	round := r.URL.Query().Get("round")
+	if round != "" {
+		// Convert the round to an integer
+		roundNum, err := strconv.Atoi(round)
+		if err != nil {
+			http.Error(w, "Invalid round query parameter", http.StatusBadRequest)
+			return
+		}
+
+		fixtures, err = h.dataService.GetRoundFixtures(roundNum)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		fixtures, err = h.dataService.GetFixtures()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -77,6 +98,7 @@ func (h *Handlers) GetFixtures(w http.ResponseWriter, r *http.Request) {
 // @Tags fixtures
 // @Produce json
 // @Param competition_id path int true "Competition ID" example(111)
+// @Param round query int false "Round number" example(1)
 // @Success 200 {array} models.APIFixture
 // @Failure 400 "Invalid competition_id"
 // @Router /api/v1/fixtures/{competition_id} [get]
@@ -101,10 +123,28 @@ func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	fixtures, err := h.dataService.GetCompetitionFixtures(int64(competitionID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	var fixtures []models.APIFixture
+
+	round := r.URL.Query().Get("round")
+	if round != "" {
+		// Convert the round to an integer
+		roundNum, err := strconv.Atoi(round)
+		if err != nil {
+			http.Error(w, "Invalid round query parameter", http.StatusBadRequest)
+			return
+		}
+
+		fixtures, err = h.dataService.GetRoundFixtures(roundNum)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		fixtures, err = h.dataService.GetCompetitionFixtures(int64(competitionID))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -117,8 +157,8 @@ func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request
 // @Description Get detailed information for a specific match within a competition.
 // @Tags fixtures
 // @Produce json
-// @Param competition_id query int true "Competition ID" example(111)
-// @Param match_id query int true "Match ID" example(20241610510)
+// @Param competition_id path int true "Competition ID" example(111)
+// @Param match_id path int true "Match ID" example(20241610510)
 // @Success 200 {object} models.APIFixture
 // @Failure 400 "Invalid competition_id or match_id, or Fixture does not belong to the specified competition"
 // @Failure 500 "Internal server error"

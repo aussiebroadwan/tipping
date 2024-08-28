@@ -25,6 +25,20 @@ JOIN teams home_team ON md.homeTeam_id = home_team.id
 JOIN teams away_team ON md.awayTeam_id = away_team.id
 ORDER BY f.kickOffTime;
 
+-- name: ListRoundMatchDetails :many
+-- Retrieve all match details available in the system by round number.
+SELECT 
+  sqlc.embed(md), 
+  sqlc.embed(f), 
+  sqlc.embed(home_team), 
+  sqlc.embed(away_team)
+FROM match_details md
+JOIN fixtures f ON md.fixture_id = f.id
+JOIN teams home_team ON md.homeTeam_id = home_team.id
+JOIN teams away_team ON md.awayTeam_id = away_team.id
+WHERE f.roundTitle = $1
+ORDER BY f.kickOffTime;
+
 -- name: ListMatchDetailsByCompetitionID :many
 -- Retrieve all match details for a specific competition ID.
 -- This query performs a JOIN between match_details and fixtures to get all 
@@ -39,6 +53,24 @@ JOIN fixtures f ON md.fixture_id = f.id
 JOIN teams home_team ON md.homeTeam_id = home_team.id
 JOIN teams away_team ON md.awayTeam_id = away_team.id
 WHERE f.competition_id = $1
+ORDER BY f.kickOffTime;
+
+-- name: ListRoundMatchDetailsByCompetitionID :many
+-- Retrieve all match details for a specific competition ID.
+-- This query performs a JOIN between match_details and fixtures to get all 
+-- match details that are part of a specific competition and round.
+SELECT 
+  sqlc.embed(md), 
+  sqlc.embed(f), 
+  sqlc.embed(home_team), 
+  sqlc.embed(away_team)
+FROM match_details md
+JOIN fixtures f ON md.fixture_id = f.id
+JOIN teams home_team ON md.homeTeam_id = home_team.id
+JOIN teams away_team ON md.awayTeam_id = away_team.id
+WHERE 
+  f.competition_id = $1
+  AND f.roundTitle = $2
 ORDER BY f.kickOffTime;
 
 -- name: CreateMatchDetail :one

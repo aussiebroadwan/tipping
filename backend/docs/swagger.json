@@ -29,6 +29,125 @@
                     }
                 }
             }
+        },
+        "/api/v1/fixtures": {
+            "get": {
+                "description": "Get all fixtures",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fixtures"
+                ],
+                "summary": "Retrieve a list of all fixtures",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "Round number",
+                        "name": "round",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.APIFixture"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/fixtures/{competition_id}": {
+            "get": {
+                "description": "Get fixtures by competition ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fixtures"
+                ],
+                "summary": "Retrieve fixtures for a specific competition",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 111,
+                        "description": "Competition ID",
+                        "name": "competition_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "Round number",
+                        "name": "round",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.APIFixture"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid competition_id"
+                    }
+                }
+            }
+        },
+        "/api/v1/fixtures/{competition_id}/{match_id}": {
+            "get": {
+                "description": "Get detailed information for a specific match within a competition.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fixtures"
+                ],
+                "summary": "Retrieve match details",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 111,
+                        "description": "Competition ID",
+                        "name": "competition_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 20241610510,
+                        "description": "Match ID",
+                        "name": "match_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIFixture"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid competition_id or match_id, or Fixture does not belong to the specified competition"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -37,11 +156,94 @@
             "properties": {
                 "id": {
                     "description": "Unique identifier for the competition",
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 111
                 },
                 "name": {
-                    "description": "Name of the competition (e.g., \"NRL\", \"NRLW\")",
-                    "type": "string"
+                    "description": "Name of the competition",
+                    "type": "string",
+                    "example": "NRL"
+                }
+            }
+        },
+        "models.APIFixture": {
+            "type": "object",
+            "properties": {
+                "away_team": {
+                    "description": "Away team details",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.APITeam"
+                        }
+                    ]
+                },
+                "competition_id": {
+                    "description": "The competition ID this fixture belongs to",
+                    "type": "integer",
+                    "example": 111
+                },
+                "home_team": {
+                    "description": "Home team details",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.APITeam"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "Unique identifier for the fixture",
+                    "type": "integer",
+                    "example": 20241610510
+                },
+                "kick_off_time": {
+                    "description": "Kickoff time of the match in RFC3339 format",
+                    "type": "string",
+                    "example": "2024-08-24T01:00:00Z"
+                },
+                "match_state": {
+                    "description": "Current state of the match",
+                    "type": "string",
+                    "example": "FullTime"
+                },
+                "round_title": {
+                    "description": "The title of the round",
+                    "type": "string",
+                    "example": "Round 22"
+                },
+                "venue": {
+                    "description": "Venue of the match",
+                    "type": "string",
+                    "example": "Leichhardt Oval"
+                },
+                "venue_city": {
+                    "description": "City where the venue is located",
+                    "type": "string",
+                    "example": "Sydney"
+                }
+            }
+        },
+        "models.APITeam": {
+            "type": "object",
+            "properties": {
+                "form": {
+                    "description": "Recent form of the team",
+                    "type": "string",
+                    "example": "WLWWL"
+                },
+                "nickname": {
+                    "description": "Nickname of the team",
+                    "type": "string",
+                    "example": "Cowboys"
+                },
+                "odds": {
+                    "description": "Odds for the team to win",
+                    "type": "number",
+                    "example": 3.42
+                },
+                "score": {
+                    "description": "Final score of the team",
+                    "type": "integer",
+                    "example": 40
                 }
             }
         }

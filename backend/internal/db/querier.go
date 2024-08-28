@@ -47,6 +47,12 @@ type Querier interface {
 	// This query performs a JOIN between match_details and fixtures to get all
 	// match details that are part of a specific competition.
 	ListMatchDetailsByCompetitionID(ctx context.Context, competitionID int64) ([]*ListMatchDetailsByCompetitionIDRow, error)
+	// Retrieve all match details available in the system by round number.
+	ListRoundMatchDetails(ctx context.Context, roundtitle string) ([]*ListRoundMatchDetailsRow, error)
+	// Retrieve all match details for a specific competition ID.
+	// This query performs a JOIN between match_details and fixtures to get all
+	// match details that are part of a specific competition and round.
+	ListRoundMatchDetailsByCompetitionID(ctx context.Context, arg ListRoundMatchDetailsByCompetitionIDParams) ([]*ListRoundMatchDetailsByCompetitionIDRow, error)
 	// Retrieve all teams available in the system.
 	ListTeams(ctx context.Context) ([]*Team, error)
 	// Conditionally update fixture details based on provided arguments.
