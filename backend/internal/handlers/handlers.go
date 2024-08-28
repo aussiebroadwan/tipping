@@ -59,33 +59,13 @@ func (h *Handlers) GetCompetitions(w http.ResponseWriter, r *http.Request) {
 // @Description Get all fixtures
 // @Tags fixtures
 // @Produce json
-// @Param round query int false "Round number" example(1)
 // @Success 200 {array} models.APIFixture
 // @Router /api/v1/fixtures [get]
 func (h *Handlers) GetFixtures(w http.ResponseWriter, r *http.Request) {
-	var fixtures []models.APIFixture
-	var err error
-
-	round := r.URL.Query().Get("round")
-	if round != "" {
-		// Convert the round to an integer
-		roundNum, err := strconv.Atoi(round)
-		if err != nil {
-			http.Error(w, "Invalid round query parameter", http.StatusBadRequest)
-			return
-		}
-
-		fixtures, err = h.dataService.GetRoundFixtures(roundNum)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	} else {
-		fixtures, err = h.dataService.GetFixtures()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	fixtures, err := h.dataService.GetFixtures()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -134,7 +114,7 @@ func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request
 			return
 		}
 
-		fixtures, err = h.dataService.GetRoundFixtures(roundNum)
+		fixtures, err = h.dataService.GetRoundCompetitionFixtures(int64(competitionID), roundNum)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
