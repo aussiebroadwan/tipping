@@ -106,7 +106,13 @@ func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request
 	var fixtures []models.APIFixture
 
 	round := r.URL.Query().Get("round")
-	if round != "" {
+	if round == "all" {
+		fixtures, err = h.dataService.GetCompetitionFixtures(int64(competitionID))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else if round != "" {
 		// Convert the round to an integer
 		roundNum, err := strconv.Atoi(round)
 		if err != nil {
@@ -120,7 +126,7 @@ func (h *Handlers) GetCompetitionFixtures(w http.ResponseWriter, r *http.Request
 			return
 		}
 	} else {
-		fixtures, err = h.dataService.GetCompetitionFixtures(int64(competitionID))
+		fixtures, err = h.dataService.GetCompetitionCurrentFixtures(int64(competitionID))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
