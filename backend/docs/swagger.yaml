@@ -92,12 +92,6 @@ paths:
   /api/v1/fixtures:
     get:
       description: Get all fixtures
-      parameters:
-      - description: Round number
-        example: 1
-        in: query
-        name: round
-        type: integer
       produces:
       - application/json
       responses:

@@ -65,6 +65,7 @@ func (s *NRLScheduledService) FetchAndStoreData(ctx context.Context) {
 			log.Printf("Error fetching fixtures for competition %d: %v", competitionID, err)
 			continue
 		}
+		time.Sleep(1 * time.Second)
 
 		// Store each fetched fixture and its details.
 		for _, fixture := range fixtures {
@@ -81,6 +82,7 @@ func (s *NRLScheduledService) FetchAndStoreData(ctx context.Context) {
 		}
 
 		log.Printf("Fetched and stored %d fixtures for competition %d", len(fixtures), competitionID)
+		time.Sleep(5 * time.Second)
 	}
 
 	log.Println("Completed scheduled fetch of NRL data")

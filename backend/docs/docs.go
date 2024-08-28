@@ -48,15 +48,6 @@ const docTemplate = `{
                     "fixtures"
                 ],
                 "summary": "Retrieve a list of all fixtures",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "Round number",
-                        "name": "round",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

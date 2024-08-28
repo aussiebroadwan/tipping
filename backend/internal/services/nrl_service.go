@@ -86,7 +86,7 @@ func (s *NRLService) FetchFixtures(competitionID int64, roundNum, season int) ([
 // fetchMatchDetail fetches additional match details for a specific fixture using its matchCentreURL.
 func (s *NRLService) fetchMatchDetail(matchCentreURL string) (*models.NRLFixture, error) {
 	// Full URL for the match details data
-	url := fmt.Sprintf("%s%s/data", s.baseURL, matchCentreURL)
+	url := fmt.Sprintf("%s%sdata", s.baseURL, matchCentreURL)
 	resp, err := s.client.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch match details from %s: %w", matchCentreURL, err)
